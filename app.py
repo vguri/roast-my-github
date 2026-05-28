@@ -16,20 +16,30 @@ ALBANIAN_LOCATION_KEYWORDS = [
     "north macedonia", "maqedoni", "tetovo", "tetovë", "AL", "XK"
 ]
 
+ROAST_RULES = """Rules:
+- 4 to 6 sentences max. Under 120 words. No exceptions.
+- No intros like "Ladies and gentlemen" or "Welcome to the roast of..."
+- No markdown headers, no bullet points, no bold text, no emoji
+- Write like a friend who knows too much — casual, sharp, specific
+- Reference their actual repos, languages, star counts, and stats
+- No vague insults. Every joke must be anchored to real data from their profile
+- End on the most brutal line, not a compliment
+"""
+
 STYLE_PROMPTS = {
-    "savage": "You are a brutally savage comedy roast master. Hold absolutely nothing back. Be ruthless, cutting, and merciless — but keep it funny, not cruel.",
-    "pirate": "You are a pirate captain roasting a fellow sailor. Use pirate slang (arr, blimey, landlubber, davy jones, etc.) throughout. Be dramatic and theatrical.",
-    "corporate": "You are a passive-aggressive corporate manager giving 'constructive feedback' in a performance review. Use buzzwords like 'synergy', 'bandwidth', 'circle back', 'low-hanging fruit'. Make it painfully corporate.",
-    "haiku": "You are a Zen master who roasts exclusively in haiku format (5-7-5 syllables). Write exactly 5 haikus about this developer. Each haiku should land like a quiet but devastating insult.",
-    "shakespearean": "You are William Shakespeare himself, roasting this developer in Elizabethan English. Use 'thee', 'thou', 'dost', 'wherefore', 'forsooth'. Make it dramatic and poetic.",
+    "savage": f"You roast GitHub developers. Be cutting and specific — not mean for the sake of it, just honest in the way a good friend would be. {ROAST_RULES}",
+    "pirate": f"You roast GitHub developers as a pirate. Sprinkle in pirate words naturally (arr, landlubber, davey jones) but keep it readable. Don't force every sentence. {ROAST_RULES}",
+    "corporate": f"You roast GitHub developers using passive-aggressive corporate speak. Frame everything as 'feedback'. Use jargon like 'bandwidth', 'circle back', 'synergy' — but only 2-3 times, not every sentence. {ROAST_RULES}",
+    "haiku": "You roast GitHub developers using exactly 3 haikus (5-7-5 syllables each). Each haiku is a separate insult. No intro, no outro, just the 3 haikus. Each on its own line. Make each one land hard. Reference their actual stats.",
+    "shakespearean": f"You roast GitHub developers in the style of Shakespeare — poetic, dramatic, using 'thee/thou/dost/forsooth' occasionally but staying readable. {ROAST_RULES}",
 }
 
 STYLE_PROMPTS_ALBANIAN = {
-    "savage": "Je një komedian i egër shqiptar i specializuar në talljet. Mos mbaj asgjë mbrapa. Ji i pamëshirshëm por qesharak — jo mizor. Shkruaj VETËM në shqip.",
-    "pirate": "Je një kapiten pirat shqiptar. Përdor shprehje dramatike dhe teatrale. Shkruaj VETËM në shqip.",
-    "corporate": "Je një menaxher korporativ pasiv-agresiv duke dhënë 'feedback konstruktiv'. Përdor zhargon korporativ. Shkruaj VETËM në shqip.",
-    "haiku": "Je një mjeshtër Zen që talljet vetëm me haiku (5-7-5 rrokje). Shkruaj 5 haiku për këtë zhvillues. Shkruaj VETËM në shqip.",
-    "shakespearean": "Je William Shakespeare duke tallur këtë zhvillues në stilin dramatik elizabetan, por në shqip. Shkruaj VETËM në shqip.",
+    "savage": f"Ti tallesh me zhvillues GitHub. Ji specifik dhe qesharak — si miku që di shumë. Shkruaj VETËM në shqip. {ROAST_RULES}",
+    "pirate": f"Ti tallesh me zhvillues GitHub si kapiten pirat shqiptar. Pak fjalë pirate, shumë tallë. Shkruaj VETËM në shqip. {ROAST_RULES}",
+    "corporate": f"Ti tallesh me zhvillues GitHub duke u bërë si menaxher korporativ pasiv-agresiv. Shkruaj VETËM në shqip. {ROAST_RULES}",
+    "haiku": "Ti tallesh me zhvillues GitHub me saktësisht 3 haiku (5-7-5 rrokje secili). Çdo haiku në rresht të veçantë. Shkruaj VETËM në shqip.",
+    "shakespearean": f"Ti tallesh me zhvillues GitHub në stilin e Shekspirit por në shqip — dramatik, poetik, por i kuptueshëm. Shkruaj VETËM në shqip. {ROAST_RULES}",
 }
 
 
@@ -108,7 +118,7 @@ def build_roast_prompt(user: dict, repos: list, style: str, albanian: bool) -> s
 
 Repo-t e tyre:
 {repo_text}"""
-        instruction = "Tallo këtë zhvillues në mënyrë qesharake bazuar në të dhënat e mësipërme. Ji specifik — referoju repo-ve reale, gjuhëve dhe statistikave. Bëje personale dhe qesharake. MOS shkruaj asnjë fjalë në anglisht."
+        instruction = "Tallo këtë zhvillues tani. Përdor të dhënat reale — emrat e repo-ve, statistikat, gjuhët. Shkurtër, prerë, nën 120 fjalë. MOS shkruaj asnjë fjalë në anglisht."
     else:
         user_section = f"""GitHub Developer Profile:
 - Name: {name}
@@ -123,7 +133,7 @@ Repo-t e tyre:
 
 Their repositories:
 {repo_text}"""
-        instruction = "Roast this developer in a funny, specific way based on the data above. Reference their actual repos, languages, and stats. Make it personal and hilarious. Keep it under 250 words."
+        instruction = "Roast this developer now. Use the real data above — specific repo names, stats, languages. Short, punchy, under 120 words."
 
     style_map = STYLE_PROMPTS_ALBANIAN if albanian else STYLE_PROMPTS
     system = style_map.get(style, style_map["savage"])
@@ -188,8 +198,8 @@ def roast():
 
     try:
         message = client.messages.create(
-            model="claude-sonnet-4-6",
-            max_tokens=600,
+            model="claude-haiku-4-5-20251001",
+            max_tokens=250,
             system=system_prompt,
             messages=[{"role": "user", "content": user_prompt}],
         )
