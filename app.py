@@ -226,6 +226,7 @@ def profile():
 
 @app.route("/roast", methods=["POST"])
 def roast():
+    from flask import Response, stream_with_context
     data = request.get_json()
     user = data.get("user")
     repos = data.get("repos", [])
@@ -237,18 +238,21 @@ def roast():
 
     system_prompt, user_prompt = build_roast_prompt(user, repos, style, albanian)
 
-    try:
-        message = client.messages.create(
-            model="claude-haiku-4-5-20251001",
-            max_tokens=320,
-            system=system_prompt,
-            messages=[{"role": "user", "content": user_prompt}],
-        )
-        roast_text = message.content[0].text
-    except Exception as e:
-        return jsonify({"error": "The roast machine broke. Even Claude can't handle this one."}), 500
+    def generate():
+        try:
+            with client.messages.stream(
+                model="claude-haiku-4-5-20251001",
+                max_tokens=320,
+                system=system_prompt,
+                messages=[{"role": "user", "content": user_prompt}],
+            ) as stream:
+                for text in stream.text_stream:
+                    yield text
+        except Exception as e:
+            yield f"\n\n[ERROR: {str(e)}]"
 
-    return jsonify({"roast": roast_text, "style": style})
+    return Response(stream_with_context(generate()), mimetype="text/plain",
+                    headers={"X-Roast-Style": style, "Cache-Control": "no-cache"})
 
 
 if __name__ == "__main__":

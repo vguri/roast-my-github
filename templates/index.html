@@ -227,7 +227,7 @@
             <button class="style-pill text-muted px-3.5 py-1.5 rounded-full cursor-pointer" data-style="corporate">Corporate</button>
             <button class="style-pill text-muted px-3.5 py-1.5 rounded-full cursor-pointer" data-style="haiku">Haiku</button>
             <button class="style-pill text-muted px-3.5 py-1.5 rounded-full cursor-pointer" data-style="shakespearean">Shakespeare</button>
-            <button class="style-pill text-muted px-3.5 py-1.5 rounded-full cursor-pointer" data-style="albanian">🇽🇰 Albanian</button>
+            <button class="style-pill text-muted px-3.5 py-1.5 rounded-full cursor-pointer" data-style="albanian">Albanian</button>
           </div>
         </div>
       </div>
@@ -352,10 +352,7 @@
     <footer class="w-full max-w-lg mx-auto px-4 pb-10 pt-6 mt-4">
       <div class="border-t border-border/30 pt-6 flex flex-col items-center gap-2 text-center">
         <p class="font-mono text-xs" style="color: rgba(255,107,53,0.55);">
-          zero chill. maximum damage. 100% accurate.*
-        </p>
-        <p class="font-mono text-xs text-muted/25">
-          *results may vary. your feelings will not.
+          zero chill. maximum damage. 100% accurate.
         </p>
       </div>
     </footer>
@@ -502,7 +499,7 @@
         showProfileCard(profileData);
         btnText.textContent = 'Roasting...';
 
-        // Step 2: generate roast (slow, Claude)
+        // Step 2: stream the roast in real-time
         const roastRes = await fetch('/roast', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -513,14 +510,40 @@
             albanian: profileData.albanian,
           }),
         });
-        const roastData = await roastRes.json();
 
-        if (!roastRes.ok || roastData.error) {
+        if (!roastRes.ok) {
           document.getElementById('roastContent').innerHTML =
-            `<p class="text-red-400 text-sm">${roastData.error || 'Failed to generate roast.'}</p>`;
-        } else {
-          showRoastText(roastData.roast, roastData.style);
+            `<p class="text-red-400 text-sm">Failed to generate roast. Try again.</p>`;
+          return;
         }
+
+        // Stream text into the content area
+        const content = document.getElementById('roastContent');
+        content.innerHTML = '';
+        const labels = { savage:'savage', pirate:'pirate', corporate:'corporate', haiku:'haiku', shakespearean:'shakespeare', albanian:'albanian' };
+        document.getElementById('styleBadge').textContent = labels[selectedStyle] || selectedStyle;
+
+        const reader = roastRes.body.getReader();
+        const decoder = new TextDecoder();
+        let fullText = '';
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          fullText += decoder.decode(value, { stream: true });
+          // Re-render paragraphs as text streams in
+          content.innerHTML = '';
+          fullText.split('\n').forEach(line => {
+            if (!line.trim()) {
+              content.appendChild(document.createElement('br'));
+            } else {
+              const p = document.createElement('p');
+              p.innerHTML = line.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/^#+\s*/, '');
+              content.appendChild(p);
+            }
+          });
+        }
+        currentRoast = fullText;
 
       } catch {
         showError('Could not reach the server. Make sure the app is running and try again.');
