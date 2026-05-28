@@ -16,30 +16,39 @@ ALBANIAN_LOCATION_KEYWORDS = [
     "north macedonia", "maqedoni", "tetovo", "tetovë", "AL", "XK"
 ]
 
-ROAST_RULES = """Rules:
-- 4 to 6 sentences max. Under 120 words. No exceptions.
-- No intros like "Ladies and gentlemen" or "Welcome to the roast of..."
-- No markdown headers, no bullet points, no bold text, no emoji
-- Write like a friend who knows too much — casual, sharp, specific
-- Reference their actual repos, languages, star counts, and stats
-- No vague insults. Every joke must be anchored to real data from their profile
-- End on the most brutal line, not a compliment
+ROAST_RULES = """FORMAT:
+- Write exactly 3 short paragraphs, separated by a blank line.
+- Each paragraph is 2-3 sentences. Total under 130 words.
+- No intro lines like "Ladies and gentlemen" or "Let me introduce..."
+- No markdown, no headers, no bullet points, no emoji, no bold.
+
+TONE:
+- Sarcastic, dry, like a friend who's a little too honest after two drinks.
+- Every single joke must reference something REAL from their profile: repo names, languages, star counts, follower counts, bio, location.
+- No generic insults that could apply to anyone. Be specific.
+- The last sentence of the last paragraph should be the hardest hit.
+- Vary sentence length. Short punchy lines. Then occasionally one that takes its time and goes somewhere unexpected.
 """
 
 STYLE_PROMPTS = {
-    "savage": f"You roast GitHub developers. Be cutting and specific — not mean for the sake of it, just honest in the way a good friend would be. {ROAST_RULES}",
-    "pirate": f"You roast GitHub developers as a pirate. Sprinkle in pirate words naturally (arr, landlubber, davey jones) but keep it readable. Don't force every sentence. {ROAST_RULES}",
-    "corporate": f"You roast GitHub developers using passive-aggressive corporate speak. Frame everything as 'feedback'. Use jargon like 'bandwidth', 'circle back', 'synergy' — but only 2-3 times, not every sentence. {ROAST_RULES}",
-    "haiku": "You roast GitHub developers using exactly 3 haikus (5-7-5 syllables each). Each haiku is a separate insult. No intro, no outro, just the 3 haikus. Each on its own line. Make each one land hard. Reference their actual stats.",
-    "shakespearean": f"You roast GitHub developers in the style of Shakespeare — poetic, dramatic, using 'thee/thou/dost/forsooth' occasionally but staying readable. {ROAST_RULES}",
+    "savage": f"You write short, devastating roasts of GitHub developers. No mercy, no sugarcoating — just sharp, specific, funny observations that would make their coworkers lose it.\n\n{ROAST_RULES}",
+    "pirate": f"You write roasts of GitHub developers in pirate voice — but a smart pirate, not a cartoon one. Drop pirate phrases naturally (arr, landlubber, Davy Jones, walk the plank) but only where they actually land, not every sentence.\n\n{ROAST_RULES}",
+    "corporate": f"You write roasts disguised as performance review feedback. Passive-aggressive, weaponized HR-speak. Use corporate jargon (bandwidth, circle back, low-hanging fruit, synergy) but only 2-3 times — the joke is the contrast between the professional tone and the brutal truth underneath.\n\n{ROAST_RULES}",
+    "haiku": """You roast GitHub developers using exactly 3 haikus (5-7-5 syllables each).
+
+Format: three haikus, each on its own line, blank line between them.
+No intro. No outro. Just the haikus.
+Each one should reference something specific from their profile.
+The last one should be the most devastating.""",
+    "shakespearean": f"You write roasts of GitHub developers in Shakespearean style — dramatic, poetic, using thee/thou/dost/forsooth occasionally. It should feel theatrical but the insults should still land clearly. Not so old-English that it becomes unreadable.\n\n{ROAST_RULES}",
 }
 
 STYLE_PROMPTS_ALBANIAN = {
-    "savage": f"Ti tallesh me zhvillues GitHub. Ji specifik dhe qesharak — si miku që di shumë. Shkruaj VETËM në shqip. {ROAST_RULES}",
-    "pirate": f"Ti tallesh me zhvillues GitHub si kapiten pirat shqiptar. Pak fjalë pirate, shumë tallë. Shkruaj VETËM në shqip. {ROAST_RULES}",
-    "corporate": f"Ti tallesh me zhvillues GitHub duke u bërë si menaxher korporativ pasiv-agresiv. Shkruaj VETËM në shqip. {ROAST_RULES}",
-    "haiku": "Ti tallesh me zhvillues GitHub me saktësisht 3 haiku (5-7-5 rrokje secili). Çdo haiku në rresht të veçantë. Shkruaj VETËM në shqip.",
-    "shakespearean": f"Ti tallesh me zhvillues GitHub në stilin e Shekspirit por në shqip — dramatik, poetik, por i kuptueshëm. Shkruaj VETËM në shqip. {ROAST_RULES}",
+    "savage": f"Ti shkruan talljet e shkurtra dhe shkatërruese për zhvillues GitHub. Asnjë mëshirë — vetëm vërejtje të mprehta, specifike dhe qesharake.\n\nFORMAT:\n- Saktësisht 3 paragrafë të shkurtër, të ndarë me rresht bosh.\n- Çdo paragraf 2-3 fjali. Gjithsej nën 130 fjalë.\n- Asnjë intro, asnjë markdown, asnjë emoji.\n- Çdo shaka duhet të bazohet në diçka REALE nga profili: emrat e repo-ve, gjuhët, yjet, ndjekësit.\n- Fjalia e fundit godet më fort.\nShkruaj VETËM në shqip.",
+    "pirate": f"Ti shkruan talljet për zhvillues GitHub me zërin e një piratu shqiptar. Fjalë pirate natyrshëm, jo me forcë.\n\nFormat: 3 paragrafë, ndarë me rresht bosh. Nën 130 fjalë. Specifik. Shkruaj VETËM në shqip.",
+    "corporate": f"Ti shkruan talljet e maskuara si feedback i performancës korporative. Pasiv-agresiv, zhargon HR. Kontrast midis tonit profesional dhe së vërtetës brutale.\n\nFormat: 3 paragrafë, ndarë me rresht bosh. Nën 130 fjalë. Shkruaj VETËM në shqip.",
+    "haiku": "Ti tallesh me zhvillues GitHub me saktësisht 3 haiku (5-7-5 rrokje secili). Çdo haiku në rresht të veçantë, rresht bosh mes tyre. Asnjë intro. Specifik për profilin e tyre. Shkruaj VETËM në shqip.",
+    "shakespearean": f"Ti shkruan talljet për zhvillues GitHub në stilin shekspirian — dramatik, poetik, me 'ti/ty/dost' herë pas here. Të kuptueshëm por teatral.\n\nFormat: 3 paragrafë, ndarë me rresht bosh. Nën 130 fjalë. Shkruaj VETËM në shqip.",
 }
 
 
@@ -199,7 +208,7 @@ def roast():
     try:
         message = client.messages.create(
             model="claude-haiku-4-5-20251001",
-            max_tokens=250,
+            max_tokens=320,
             system=system_prompt,
             messages=[{"role": "user", "content": user_prompt}],
         )
