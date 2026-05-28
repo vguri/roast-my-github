@@ -1,6 +1,7 @@
 import os
+from pathlib import Path
 from dotenv import load_dotenv
-load_dotenv()
+load_dotenv(dotenv_path=Path(__file__).parent / ".env", override=True)
 import requests
 from flask import Flask, render_template, request, jsonify
 from anthropic import Anthropic
@@ -165,7 +166,7 @@ def roast():
 
     try:
         message = client.messages.create(
-            model="claude-opus-4-5",
+            model="claude-sonnet-4-6",
             max_tokens=600,
             system=system_prompt,
             messages=[{"role": "user", "content": user_prompt}],
