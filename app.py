@@ -136,24 +136,21 @@ def index():
     return render_template("index.html")
 
 
-@app.route("/roast", methods=["POST"])
-def roast():
+@app.route("/profile", methods=["POST"])
+def profile():
     data = request.get_json()
     username = (data.get("username") or "").strip()
-    style = data.get("style", "savage")
 
     if not username:
         return jsonify({"error": "Please enter a GitHub username."}), 400
-
     if len(username) > 39 or not all(c.isalnum() or c in "-" for c in username):
         return jsonify({"error": "That doesn't look like a valid GitHub username."}), 400
 
     gh_data = fetch_github_data(username)
-
     if "error" in gh_data:
         messages = {
             "user_not_found": f"No GitHub user found with the username '{username}'. Maybe they deleted their account out of shame?",
-            "rate_limited": "GitHub API rate limit hit. Try adding a GITHUB_TOKEN to your environment.",
+            "rate_limited": "GitHub API rate limit hit. Try again in a moment.",
             "github_error": "GitHub is having a moment. Try again shortly.",
         }
         return jsonify({"error": messages.get(gh_data["error"], "Something went wrong.")}), 404
@@ -161,6 +158,31 @@ def roast():
     user = gh_data["user"]
     repos = gh_data["repos"]
     albanian = is_albanian(user.get("location", ""))
+
+    return jsonify({
+        "user": {
+            "login": user.get("login"),
+            "name": user.get("name"),
+            "avatar_url": user.get("avatar_url"),
+            "public_repos": user.get("public_repos", 0),
+            "followers": user.get("followers", 0),
+            "location": user.get("location"),
+        },
+        "albanian": albanian,
+        "repos": [{"name": r.get("name"), "language": r.get("language"), "stargazers_count": r.get("stargazers_count", 0), "description": r.get("description")} for r in repos[:15]],
+    })
+
+
+@app.route("/roast", methods=["POST"])
+def roast():
+    data = request.get_json()
+    user = data.get("user")
+    repos = data.get("repos", [])
+    style = data.get("style", "savage")
+    albanian = data.get("albanian", False)
+
+    if not user:
+        return jsonify({"error": "Missing user data."}), 400
 
     system_prompt, user_prompt = build_roast_prompt(user, repos, style, albanian)
 
@@ -175,19 +197,7 @@ def roast():
     except Exception as e:
         return jsonify({"error": "The roast machine broke. Even Claude can't handle this one."}), 500
 
-    return jsonify({
-        "roast": roast_text,
-        "user": {
-            "login": user.get("login"),
-            "name": user.get("name"),
-            "avatar_url": user.get("avatar_url"),
-            "public_repos": user.get("public_repos", 0),
-            "followers": user.get("followers", 0),
-            "location": user.get("location"),
-        },
-        "albanian": albanian,
-        "style": style,
-    })
+    return jsonify({"roast": roast_text, "style": style})
 
 
 if __name__ == "__main__":

@@ -92,18 +92,14 @@
       animation: shimmer 1.6s linear infinite;
     }
 
-    /* Roast text staggered reveal */
+    /* Roast text — visible by default, JS adds fade-in class */
     .roast-text p {
-      opacity: 0;
-      animation: slideUp 0.45s cubic-bezier(.22,1,.36,1) forwards;
+      opacity: 1;
+      transform: none;
     }
-    .roast-text p:nth-child(1) { animation-delay: 0.08s; }
-    .roast-text p:nth-child(2) { animation-delay: 0.22s; }
-    .roast-text p:nth-child(3) { animation-delay: 0.36s; }
-    .roast-text p:nth-child(4) { animation-delay: 0.50s; }
-    .roast-text p:nth-child(5) { animation-delay: 0.64s; }
-    .roast-text p:nth-child(6) { animation-delay: 0.78s; }
-    .roast-text p:nth-child(7) { animation-delay: 0.92s; }
+    .roast-text p.animate-in {
+      animation: slideUp 0.4s cubic-bezier(.22,1,.36,1) both;
+    }
 
     /* Fire glow on accent elements */
     .fire-glow {
@@ -408,8 +404,8 @@
   <script>
     let selectedStyle = 'savage';
     let currentRoast = '';
+    let cachedProfileData = null;
 
-    // Style pill selection
     document.querySelectorAll('.style-pill').forEach(pill => {
       pill.addEventListener('click', () => {
         document.querySelectorAll('.style-pill').forEach(p => {
@@ -431,100 +427,140 @@
       handleRoast();
     }
 
-    function showSkeleton() {
-      document.getElementById('resultArea').classList.remove('hidden');
-      document.getElementById('skeleton').classList.remove('hidden');
-      document.getElementById('errorCard').classList.add('hidden');
-      document.getElementById('roastCard').classList.add('hidden');
-      document.getElementById('resultArea').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    }
-
     function showError(msg) {
+      document.getElementById('resultArea').classList.remove('hidden');
       document.getElementById('skeleton').classList.add('hidden');
-      document.getElementById('errorCard').classList.remove('hidden');
       document.getElementById('roastCard').classList.add('hidden');
+      document.getElementById('errorCard').classList.remove('hidden');
       document.getElementById('errorMsg').textContent = msg;
     }
 
-    function showRoast(data) {
+    function showProfileCard(data) {
+      cachedProfileData = data;
+      document.getElementById('resultArea').classList.remove('hidden');
       document.getElementById('skeleton').classList.add('hidden');
       document.getElementById('errorCard').classList.add('hidden');
+      document.getElementById('roastCard').classList.remove('hidden');
 
-      const card = document.getElementById('roastCard');
-      card.classList.remove('hidden');
-
-      // Avatar
-      const avatar = document.getElementById('avatar');
-      avatar.src = data.user.avatar_url;
-      avatar.alt = `${data.user.login} GitHub avatar`;
-
-      // User info
-      document.getElementById('displayName').textContent = data.user.name || data.user.login;
-      document.getElementById('displayHandle').textContent = `@${data.user.login}`;
-      document.getElementById('statRepos').textContent = `${data.user.public_repos} repos`;
-      document.getElementById('statFollowers').textContent = `${data.user.followers} followers`;
+      const u = data.user;
+      document.getElementById('avatar').src = u.avatar_url;
+      document.getElementById('avatar').alt = u.login + ' avatar';
+      document.getElementById('displayName').textContent = u.name || u.login;
+      document.getElementById('displayHandle').textContent = '@' + u.login;
+      document.getElementById('statRepos').textContent = u.public_repos + ' repos';
+      document.getElementById('statFollowers').textContent = u.followers + ' followers';
 
       const locEl = document.getElementById('statLocation');
-      if (data.user.location) {
-        locEl.textContent = data.user.location;
-        locEl.classList.remove('hidden');
-      } else {
-        locEl.classList.add('hidden');
-      }
+      if (u.location) { locEl.textContent = u.location; locEl.classList.remove('hidden'); }
+      else { locEl.classList.add('hidden'); }
 
-      // Albanian badge
       document.getElementById('albanianBadge').classList.toggle('hidden', !data.albanian);
+      document.getElementById('githubLink').href = 'https://github.com/' + u.login;
 
-      // GitHub profile link
-      document.getElementById('githubLink').href = `https://github.com/${data.user.login}`;
+      const labels = { savage:'savage', pirate:'pirate', corporate:'corporate', haiku:'haiku', shakespearean:'shakespeare' };
+      document.getElementById('styleBadge').textContent = labels[selectedStyle] || selectedStyle;
 
-      // Style badge
-      const labels = { savage: 'savage', pirate: 'pirate', corporate: 'corporate', haiku: 'haiku', shakespearean: 'shakespeare' };
-      document.getElementById('styleBadge').textContent = labels[data.style] || data.style;
+      // Show roast loading state
+      const content = document.getElementById('roastContent');
+      content.innerHTML = `
+        <div class="flex items-center gap-3 py-4">
+          <div class="flex gap-1">
+            <span class="w-2 h-2 rounded-full bg-fire animate-bounce" style="animation-delay:0s"></span>
+            <span class="w-2 h-2 rounded-full bg-fire animate-bounce" style="animation-delay:0.15s"></span>
+            <span class="w-2 h-2 rounded-full bg-fire animate-bounce" style="animation-delay:0.3s"></span>
+          </div>
+          <span class="text-muted text-xs font-mono">Claude is cooking something brutal...</span>
+        </div>`;
 
-      // Roast content
-      currentRoast = data.roast;
+      document.getElementById('roastCard').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function showRoastText(roastText, style) {
+      currentRoast = roastText;
+      const labels = { savage:'savage', pirate:'pirate', corporate:'corporate', haiku:'haiku', shakespearean:'shakespeare' };
+      document.getElementById('styleBadge').textContent = labels[style] || style;
+
       const content = document.getElementById('roastContent');
       content.innerHTML = '';
-      data.roast.split('\n').filter(p => p.trim()).forEach(para => {
-        const p = document.createElement('p');
-        p.textContent = para;
-        content.appendChild(p);
-      });
 
-      card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      // Strip markdown bold/headers for cleaner display, render line by line
+      const lines = roastText.split('\n').filter(l => l.trim());
+      lines.forEach((line, i) => {
+        const p = document.createElement('p');
+        // Convert **bold** to <strong> and strip # headers
+        const cleaned = line
+          .replace(/^#+\s*/, '')
+          .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        p.innerHTML = cleaned;
+        p.className = 'animate-in';
+        p.style.animationDelay = (i * 0.07) + 's';
+        p.style.opacity = '0';
+        content.appendChild(p);
+        // Force reflow then set opacity via animation
+        requestAnimationFrame(() => { p.style.opacity = ''; });
+      });
     }
 
     async function handleRoast() {
       const username = document.getElementById('username').value.trim();
       if (!username) {
-        document.getElementById('username').focus();
-        document.getElementById('username').style.borderColor = '#FF4500';
-        setTimeout(() => document.getElementById('username').style.borderColor = '', 1000);
+        const inp = document.getElementById('username');
+        inp.focus();
+        inp.style.borderColor = '#FF4500';
+        setTimeout(() => { inp.style.borderColor = ''; }, 1000);
         return;
       }
 
       const btn = document.getElementById('roastBtn');
       const btnText = document.getElementById('btnText');
       btn.disabled = true;
-      btnText.textContent = 'Roasting...';
+      btnText.textContent = 'Fetching...';
 
-      showSkeleton();
+      // Show full-card skeleton while fetching profile
+      document.getElementById('resultArea').classList.remove('hidden');
+      document.getElementById('skeleton').classList.remove('hidden');
+      document.getElementById('errorCard').classList.add('hidden');
+      document.getElementById('roastCard').classList.add('hidden');
+      document.getElementById('skeleton').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
       try {
-        const res = await fetch('/roast', {
+        // Step 1: fetch profile fast
+        const profileRes = await fetch('/profile', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username, style: selectedStyle }),
+          body: JSON.stringify({ username }),
         });
+        const profileData = await profileRes.json();
 
-        const data = await res.json();
-
-        if (!res.ok || data.error) {
-          showError(data.error || 'Something went wrong. Try again.');
-        } else {
-          showRoast(data);
+        if (!profileRes.ok || profileData.error) {
+          showError(profileData.error || 'Something went wrong.');
+          return;
         }
+
+        // Show profile immediately
+        showProfileCard(profileData);
+        btnText.textContent = 'Roasting...';
+
+        // Step 2: generate roast (slow, Claude)
+        const roastRes = await fetch('/roast', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            user: profileData.user,
+            repos: profileData.repos,
+            style: selectedStyle,
+            albanian: profileData.albanian,
+          }),
+        });
+        const roastData = await roastRes.json();
+
+        if (!roastRes.ok || roastData.error) {
+          document.getElementById('roastContent').innerHTML =
+            `<p class="text-red-400 text-sm">${roastData.error || 'Failed to generate roast.'}</p>`;
+        } else {
+          showRoastText(roastData.roast, roastData.style);
+        }
+
       } catch {
         showError('Could not reach the server. Make sure the app is running and try again.');
       } finally {
@@ -535,9 +571,8 @@
 
     async function copyRoast() {
       if (!currentRoast) return;
-      try {
-        await navigator.clipboard.writeText(currentRoast);
-      } catch {
+      try { await navigator.clipboard.writeText(currentRoast); }
+      catch {
         const ta = document.createElement('textarea');
         ta.value = currentRoast;
         document.body.appendChild(ta);
@@ -553,6 +588,7 @@
     function roastAnother() {
       document.getElementById('username').value = '';
       document.getElementById('resultArea').classList.add('hidden');
+      cachedProfileData = null;
       document.getElementById('username').focus();
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
