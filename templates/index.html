@@ -227,6 +227,7 @@
             <button class="style-pill text-muted px-3.5 py-1.5 rounded-full cursor-pointer" data-style="corporate">Corporate</button>
             <button class="style-pill text-muted px-3.5 py-1.5 rounded-full cursor-pointer" data-style="haiku">Haiku</button>
             <button class="style-pill text-muted px-3.5 py-1.5 rounded-full cursor-pointer" data-style="shakespearean">Shakespeare</button>
+            <button class="style-pill text-muted px-3.5 py-1.5 rounded-full cursor-pointer" data-style="albanian">🇽🇰 Albanian</button>
           </div>
         </div>
       </div>
@@ -348,14 +349,14 @@
     </main>
 
     <!-- Footer -->
-    <footer class="w-full max-w-lg mx-auto px-4 pb-10 pt-6 mt-4 border-t border-border/30">
-      <div class="flex items-center justify-between">
-        <span class="font-mono text-xs" style="color: rgba(255,107,53,0.5);">Roast My GitHub</span>
-        <span class="font-mono text-xs text-muted/30">© 2025</span>
-        <a href="https://github.com" target="_blank" rel="noopener noreferrer"
-           class="font-mono text-xs text-muted/30 hover:text-muted/60 transition-colors duration-200 cursor-pointer">
-          View Source
-        </a>
+    <footer class="w-full max-w-lg mx-auto px-4 pb-10 pt-6 mt-4">
+      <div class="border-t border-border/30 pt-6 flex flex-col items-center gap-2 text-center">
+        <p class="font-mono text-xs" style="color: rgba(255,107,53,0.55);">
+          zero chill. maximum damage. 100% accurate.*
+        </p>
+        <p class="font-mono text-xs text-muted/25">
+          *results may vary. your feelings will not.
+        </p>
       </div>
     </footer>
 
@@ -417,7 +418,7 @@
       document.getElementById('albanianBadge').classList.toggle('hidden', !data.albanian);
       document.getElementById('githubLink').href = 'https://github.com/' + u.login;
 
-      const labels = { savage:'savage', pirate:'pirate', corporate:'corporate', haiku:'haiku', shakespearean:'shakespeare' };
+      const labels = { savage:'savage', pirate:'pirate', corporate:'corporate', haiku:'haiku', shakespearean:'shakespeare', albanian:'🇽🇰 albanian' };
       document.getElementById('styleBadge').textContent = labels[selectedStyle] || selectedStyle;
 
       // Show roast loading state
@@ -437,7 +438,7 @@
 
     function showRoastText(roastText, style) {
       currentRoast = roastText;
-      const labels = { savage:'savage', pirate:'pirate', corporate:'corporate', haiku:'haiku', shakespearean:'shakespeare' };
+      const labels = { savage:'savage', pirate:'pirate', corporate:'corporate', haiku:'haiku', shakespearean:'shakespeare', albanian:'🇽🇰 albanian' };
       document.getElementById('styleBadge').textContent = labels[style] || style;
 
       const content = document.getElementById('roastContent');
