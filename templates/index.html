@@ -183,43 +183,11 @@
     <!-- ── HEADER ── -->
     <header class="pt-14 pb-6 px-4 text-center w-full max-w-lg">
 
-      <!-- Logo -->
-      <div class="flex items-center justify-center gap-3 mb-5">
-        <!-- Flame logo: multi-tongue fire SVG -->
-        <div class="relative w-11 h-14 flex-shrink-0">
-          <!-- Outer flame left -->
-          <svg class="absolute inset-0 w-full h-full animate-flameL origin-bottom" viewBox="0 0 44 56" fill="none">
-            <path d="M8 52 C8 52 0 42 4 30 C6 22 12 18 10 10 C16 18 14 26 18 30 C20 20 22 12 28 4 C30 16 24 24 26 34 C28 26 32 22 36 16 C38 26 34 36 38 44 C40 48 36 52 32 52 Z"
-              fill="url(#flameGrad)" opacity="0.85"/>
-          </svg>
-          <!-- Inner bright core -->
-          <svg class="absolute inset-0 w-full h-full animate-flameR origin-bottom" viewBox="0 0 44 56" fill="none">
-            <path d="M16 52 C16 52 10 44 14 36 C16 30 20 28 20 22 C24 28 22 34 24 38 C26 32 28 28 30 24 C32 32 28 40 32 44 C34 48 30 52 24 52 Z"
-              fill="url(#innerGrad)" opacity="0.95"/>
-          </svg>
-          <!-- Tip glow -->
-          <svg class="absolute inset-0 w-full h-full animate-glow" viewBox="0 0 44 56" fill="none">
-            <ellipse cx="22" cy="10" rx="5" ry="7" fill="#FFF7ED" opacity="0.7"/>
-          </svg>
-          <defs>
-            <linearGradient id="flameGrad" x1="22" y1="4" x2="22" y2="52" gradientUnits="userSpaceOnUse">
-              <stop offset="0%" stop-color="#FFB347"/>
-              <stop offset="50%" stop-color="#FF6B35"/>
-              <stop offset="100%" stop-color="#FF4500"/>
-            </linearGradient>
-            <linearGradient id="innerGrad" x1="22" y1="22" x2="22" y2="52" gradientUnits="userSpaceOnUse">
-              <stop offset="0%" stop-color="#FFF7ED"/>
-              <stop offset="40%" stop-color="#FFD580"/>
-              <stop offset="100%" stop-color="#FF6B35"/>
-            </linearGradient>
-          </defs>
-        </div>
-
-        <div class="text-left">
-          <h1 class="font-mono font-bold text-3xl md:text-4xl leading-none tracking-tight">
-            Roast My <span style="background: linear-gradient(135deg, #FF6B35, #FFB347); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">GitHub</span>
-          </h1>
-        </div>
+      <!-- Title -->
+      <div class="mb-5">
+        <h1 class="font-mono font-bold text-3xl md:text-4xl leading-none tracking-tight text-center">
+          Roast My <span style="background: linear-gradient(135deg, #FF6B35, #FFB347); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">GitHub</span>
+        </h1>
       </div>
 
       <p class="text-muted text-sm leading-relaxed max-w-xs mx-auto">
