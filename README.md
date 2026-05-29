@@ -1,41 +1,42 @@
-# 🔥 Roast My GitHub
+# Roast My GitHub
 
-A web app that fetches your public GitHub profile and repos, then uses Claude AI to roast you in your chosen style. No mercy. No survivors.
+A web app that fetches your public GitHub profile and repos, then uses Claude AI to roast you. Six roast styles. No mercy.
 
-**Live demo:** [Replit URL here]
+**Live demo:** [Replit URL — add after deploy]
 
 ---
 
 ## What it does
 
-- Fetches public repos and profile data via the **GitHub REST API**
-- Sends the data to **Claude claude-opus-4-5** with a carefully crafted roast prompt
-- Returns a hilarious, personalized roast based on your actual repos, languages, star count, and bio
-- **Detects Albanian users** (via GitHub location field) and roasts them in Albanian 🇦🇱
-- Handles missing users, private profiles, and API errors gracefully
+- Fetches public repos and profile data via the GitHub REST API
+- Sends the data to Claude AI with a style-specific prompt and streams the response word by word
+- Profile appears instantly (~0.8s). Roast streams in as it generates (~3s)
+- Detects Albanian/Kosovar users by location and roasts them in Kosovo Albanian dialect
+- Handles missing users, private profiles, rate limits, and empty inputs gracefully
 
 ## Roast styles
 
-| Style | Description |
+| Style | What it does |
 |-------|-------------|
-| Savage | Brutally honest comedy roast, no holds barred |
-| Pirate | Arr, ye code be cursed, landlubber |
-| Corporate | Passive-aggressive "constructive feedback" in full buzzword mode |
-| Haiku | 5 devastating haikus (5-7-5) about your coding sins |
-| Shakespearean | Elizabethan English, dramatic, poetic, and ruthless |
+| Savage | Sharp, specific, dry — every joke anchored to real data |
+| Pirate | Nautical metaphors, theatrical outrage, actual pirate vocabulary |
+| Corporate | Passive-aggressive performance review, weaponized HR speak |
+| Haiku | Two limericks (AABBA rhyme) with a punchline on line 5 |
+| Shakespeare | Elizabethan English, dramatic, personally offended |
+| Albanian | Kosovo Albanian dialect — everyday language, English tech words mixed in |
 
 ---
 
 ## How to run locally
 
-### 1. Clone the repo
+### 1. Clone
 
 ```bash
 git clone https://github.com/YOUR_USERNAME/roast-my-github.git
 cd roast-my-github
 ```
 
-### 2. Set up environment
+### 2. Install dependencies
 
 ```bash
 python3 -m venv venv
@@ -43,7 +44,7 @@ source venv/bin/activate  # Windows: venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-### 3. Add your API keys
+### 3. Add API keys
 
 ```bash
 cp .env.example .env
@@ -52,11 +53,11 @@ cp .env.example .env
 Edit `.env`:
 ```
 ANTHROPIC_API_KEY=your_key_here
-GITHUB_TOKEN=optional_but_recommended
+GITHUB_TOKEN=your_github_token_here
 ```
 
-Get your Anthropic API key at [console.anthropic.com](https://console.anthropic.com).  
-`GITHUB_TOKEN` is optional but raises the GitHub API rate limit from 60 → 5000 req/hour.
+- Anthropic key: [console.anthropic.com](https://console.anthropic.com)
+- GitHub token: GitHub → Settings → Developer settings → Personal access tokens → no scopes needed. Raises rate limit from 60 → 5000 req/hour.
 
 ### 4. Run
 
@@ -64,45 +65,70 @@ Get your Anthropic API key at [console.anthropic.com](https://console.anthropic.
 python app.py
 ```
 
-Open [http://localhost:5000](http://localhost:5000).
+Open [http://localhost:8080](http://localhost:8080).
 
 ---
 
 ## How to run on Replit
 
 1. Fork this repo on GitHub
-2. Go to [replit.com](https://replit.com) → **Create Repl** → **Import from GitHub**
-3. In the Replit **Secrets** tab, add:
-   - `ANTHROPIC_API_KEY` → your Anthropic key
-   - `GITHUB_TOKEN` → your GitHub token (optional)
-4. Click **Run** — Replit will install dependencies and start the server
-5. Your public URL will appear at the top of the Replit window
+2. Go to [replit.com](https://replit.com) → Create Repl → Import from GitHub
+3. In the Replit Secrets tab, add `ANTHROPIC_API_KEY` and `GITHUB_TOKEN`
+4. Click Run — dependencies install automatically
+5. Public URL appears at the top of the Replit window
 
 ---
 
-## The prompts I settled on
+## The prompts I used
 
-The core roast prompt structure:
+Each roast style has its own system prompt. The core structure:
 
 ```
-System: You are a [STYLE] roast master. [style-specific instructions]
+System: [style-specific persona and rules — tone, format, what to reference]
 
 User: GitHub Developer Profile:
-- Name, bio, location, followers, repos, languages, total stars
-- List of up to 15 repos with language, stars, and description
+- Name, bio, location, followers, following, public repos, member since, total stars, languages
 
-Roast this developer in a funny, specific way based on the data above.
-Reference their actual repos, languages, and stats. Keep it under 250 words.
+Their repositories:
+- repo-name (language, N stars): description
+...
+
+Roast this developer now. [random angle — stats / repos / bio / languages / account age].
+Under 140 words.
 ```
 
-**What I tried first:**  
-My first prompt was generic — "roast this GitHub user." The output was bland and could have applied to anyone. The breakthrough was feeding in **specific repo data** (names, descriptions, languages, star counts) so Claude could make jokes about actual things like "your 47 abandoned todo-app repos" or "a shell script with 0 stars that you apparently consider your magnum opus."
+**What I tried first:**
+My first prompt was just "roast this GitHub user." The output was generic — nothing specific to the person. The fix was feeding in exact repo names, star counts, and languages, then requiring every joke to reference real data. Vague insults that could apply to anyone got rewritten.
 
-**Albanian detection:**  
-I check the GitHub API's `location` field for Albanian cities and country names (Albania, Kosovo, Tirana, Pristina, etc.). When detected, a separate Albanian-language system prompt fires instead. The model handles Albanian well and the jokes land differently — more personal.
+**Two-step loading:**
+The first version called GitHub + Claude sequentially, so nothing appeared for ~11 seconds. I split it into `/profile` (GitHub only, ~0.8s) and `/roast` (Claude streaming). Profile card appears immediately, roast streams in word by word. The loading state says "Claude is cooking something brutal..." while you wait.
 
-**Style differentiation:**  
-Each style has its own system prompt persona. The corporate style was the most fun to craft — the trick is that it never admits it's insulting you while being maximally devastating.
+**Speed:**
+Started with `claude-sonnet-4-6` (~10s). Switched to `claude-haiku-4-5-20251001` (~3s) — fast enough that streaming feels instant.
+
+**Albanian style:**
+Detects location field from GitHub API for Albanian/Kosovar cities. Uses a separate prompt written in Kosovo Albanian dialect with everyday language, English tech terms mixed in naturally (followers, stars, repos, commits), and real example roasts embedded so the model has patterns to follow rather than rules to interpret.
+
+---
+
+## What I'd do with more time
+
+1. Cache GitHub data per username for 5 minutes — avoid re-fetching on style switches
+2. Per-IP rate limiting on `/roast` to prevent abuse
+3. Share card — generate a styled PNG of the roast to post on social
+4. More Albanian examples embedded to improve dialect accuracy
+5. Roast history in localStorage — see your last 5 victims
+6. README deep-dive — fetch repo READMEs for even more specific jokes
+
+---
+
+## Stack
+
+- Backend: Python / Flask
+- Frontend: HTML + Tailwind CSS (CDN) + Vanilla JS
+- AI: Anthropic Claude Haiku via Python SDK (streaming)
+- Data: GitHub REST API v3
+- Deploy: Replit
 
 ---
 
@@ -110,38 +136,12 @@ Each style has its own system prompt persona. The corporate style was the most f
 
 ```
 roast-my-github/
-├── app.py              # Flask backend, GitHub API fetch, Claude API call
-├── requirements.txt    # Python dependencies
-├── .env.example        # Environment variable template
-├── .replit             # Replit configuration
+├── app.py              # Flask backend, GitHub fetch, Claude streaming
+├── requirements.txt
+├── .env.example
+├── .replit
 ├── .gitignore
 ├── README.md
 └── templates/
-    └── index.html      # Single-page frontend (Tailwind CSS via CDN)
+    └── index.html      # Full frontend — Tailwind, streaming JS, all UI
 ```
-
----
-
-## What I'd do with more time
-
-1. **Caching** — Cache GitHub data for ~5 minutes per username to reduce API calls
-2. **Rate limiting** — Per-IP rate limit on the `/roast` endpoint to prevent abuse
-3. **Share button** — Generate a shareable link/image of your roast (like a roast card)
-4. **More languages** — Detect more languages beyond Albanian (e.g., based on repo README language)
-5. **Streak counter** — Track how many users you've roasted in localStorage
-6. **Repo deep-dive** — Fetch README content for even more personalized roasts
-7. **Export as image** — Download your roast as a styled PNG to post on social
-
----
-
-## Tech stack
-
-- **Backend:** Python / Flask
-- **Frontend:** HTML + Tailwind CSS (CDN) + Vanilla JS
-- **AI:** Anthropic Claude claude-opus-4-5 via the official Python SDK
-- **Data:** GitHub REST API v3
-- **Deploy:** Replit (free tier)
-
----
-
-*Built with Claude Code and an unhealthy amount of roast energy.*
