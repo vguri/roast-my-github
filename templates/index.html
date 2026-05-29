@@ -110,6 +110,8 @@
       border: 1.5px solid #2A2A3A;
       font-family: 'JetBrains Mono', monospace;
       font-size: 0.7rem;
+      width: 100%;
+      text-align: center;
     }
     .style-pill.active {
       border-color: #FF6B35;
@@ -373,6 +375,11 @@
         pill.classList.add('active', 'text-fire');
         pill.classList.remove('text-muted');
         selectedStyle = pill.dataset.style;
+
+        // If a profile is already loaded, auto-generate roast in new style
+        if (cachedProfileData) {
+          generateAnotherRoast();
+        }
       });
     });
 
