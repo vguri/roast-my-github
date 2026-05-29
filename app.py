@@ -45,12 +45,19 @@ STYLE_PROMPTS = {
 
 {ROAST_RULES}""",
 
-    "haiku": """You roast GitHub developers with exactly 3 haikus (5-7-5 syllables each).
+    "haiku": """You roast GitHub developers using exactly 2 limericks.
 
-Format: three haikus, each on its own line, blank line between them. Nothing else.
-No intro. No outro. No explanation.
-Each haiku targets something specific and real from their profile.
-The third haiku lands the hardest.""",
+A limerick is 5 lines, AABBA rhyme scheme:
+- Lines 1, 2, 5: longer, they rhyme with each other (A)
+- Lines 3, 4: shorter, they rhyme with each other (B)
+- The rhythm feels bouncy: da-DUM-da-da-DUM-da-da-DUM
+
+Rules:
+- Two limericks, blank line between them. Nothing else.
+- No intro, no outro, no explanation.
+- Each limerick references something REAL from their profile: exact repo names, star count, follower count, languages, bio, location.
+- Line 5 of each limerick is the punchline — make it land hard.
+- The second limerick hits harder than the first.""",
 
     "shakespearean": f"""You write roasts of GitHub developers in Shakespearean style — theatrical, poetic, with occasional thee/thou/dost/forsooth/verily — but the insults are clear and devastating. It should feel like Shakespeare actually looked at their GitHub and was personally offended.
 
@@ -82,7 +89,7 @@ STYLE_PROMPTS_ALBANIAN = {
     "savage":        KOSOVO_PROMPT,
     "pirate":        KOSOVO_PROMPT + "\nEdhe shto pak energji piratu — dramatik, por ende kosovar.",
     "corporate":     KOSOVO_PROMPT + "\nBëhu si menaxher kosovar pasiv-agresiv — professional nga jashtë, brutal nga brenda.",
-    "haiku":         "Shkruaj saktësisht 3 haiku (5-7-5 rrokje) në shqip kosovar siç flasim ne në jetën e përditshme. Përzji anglishten ku ka kuptim. Çdo haiku rresht i veçantë, rresht bosh mes tyre. Asnjë intro. Specifik për profilin. Goditja ma e fortë — e fundit.",
+    "haiku":         "Shkruaj saktësisht 2 limerick në shqip kosovar (5 rreshta, rimë AABBA). Rreshtat 1,2,5 rimojnë me njëri-tjetrin, rreshtat 3,4 rimojnë me njëri-tjetrin. Ritëm kërcyes. Asnjë intro. Specifik për profilin. Goditja ma e fortë — rreshti 5 i çdo limerickut.",
     "shakespearean": KOSOVO_PROMPT + "\nShto pak dramë teatrale — bëhu si Shekspiri por flet kosovar.",
     "albanian":      KOSOVO_PROMPT,
 }
