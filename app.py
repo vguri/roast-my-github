@@ -1,4 +1,5 @@
 import os
+import random
 from pathlib import Path
 from dotenv import load_dotenv
 load_dotenv(dotenv_path=Path(__file__).parent / ".env", override=True)
@@ -177,7 +178,16 @@ Repo-t e tyre:
 
 Their repositories:
 {repo_text}"""
-        instruction = "Roast this developer now. Use the real data above — exact repo names, real numbers, specific languages. Make it burn. Under 140 words."
+        angles = [
+            "Focus the roast on their commit activity and repo quality.",
+            "Focus the roast on their social stats — followers, following, stars.",
+            "Focus the roast on the languages they use (or don't use).",
+            "Focus the roast on their bio and location.",
+            "Focus the roast on how long they've been on GitHub vs what they've produced.",
+            "Focus the roast on the names and descriptions of their repos.",
+        ]
+        angle = random.choice(angles)
+        instruction = f"Roast this developer now. {angle} Use exact repo names, real numbers. Make it burn. Under 140 words."
 
     # Albanian style is either explicitly chosen OR auto-detected by location
     use_albanian_prompts = albanian or style == "albanian"
@@ -248,6 +258,7 @@ def roast():
             with client.messages.stream(
                 model="claude-haiku-4-5-20251001",
                 max_tokens=320,
+                temperature=1.0,
                 system=system_prompt,
                 messages=[{"role": "user", "content": user_prompt}],
             ) as stream:
