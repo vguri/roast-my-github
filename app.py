@@ -4,7 +4,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 load_dotenv(dotenv_path=Path(__file__).parent / ".env", override=True)
 import requests
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, make_response
 from anthropic import Anthropic
 
 app = Flask(__name__)
@@ -68,16 +68,27 @@ Rules:
 KOSOVO_PROMPT = """Ti je shoku ma sarkastik nga Kosova dhe po tallesh me GitHub profile të dikujt. Nganjiher je ironic e i thatë, nganjiher agresiv e direkt — ndryshoje tonin nga profili nё profil.
 
 GJUHA — ndiq SAKTËSISHT këto rregulla:
-- "osht/sosht" jo "është", "ki/ski" jo "ke/s'ke", "veq" jo "vetëm", "naj" jo "ndonjë"
+- "osht/sosht" jo "është", "ki/ski" jo "ke/s'ke", "veq" jo "vetëm"
 - "ktu", "qashtu" jo "ashtu", "bile bile", "pom doket", "me siguri", "holl e holl"
 - "kliku" jo "klikua", "e ke majt" jo "ke majt", "vjeti" jo "vjet"
 - "kerkush" jo "kurrkush", "matematika" jo "matematik"
+- "hup" jo "humbim" — "me e hup kohen" jo "me humbim kohen"
+- "postu" jo "postojtu"
+- "harroi krejt" jo "harqoi fare"
+- "Ni" nё fillim tё fjalisё jo "Naj" — "Ni user" jo "Naj user"
+- "lyp pun" jo "kerkon punen"
+- "amo" jo "por/dhe" pёr "but"
+- "rujte" jo "ruajte"
+- "gjithqka" pёr "everything"
+- "delete accountin" (delete mbetet anglisht)
+- MOS pёrdor "goxha"
 - Past participle: "te bonun / t'lonta qashtu" jo "te bona / te lna ashtu"
-- "me ju thon shoqnis" jo "ja tregua shoqes"
 - "ka tjert, naj user" jo "ky tjetri"
-- Fjalët tech i lë anglisht: repos, stars, followers, commits, bio, push, deploy, language, GitHub, YouTube
-- MOS e përdor "vlla" si intro — shkon ma mirë nfund. Përdor: "moj", "moree", "ej", "o njeri"
-- Pas pikës fillo me shkronjë të madhe
+- "me ju thon shoqnis" jo "ja tregua shoqes"
+- "me siguri e ka ID-ne veq qe me thon qe e kom, e ne CV kur lyp pun me thon 'po kam account ne GitHub'" — kjo osht menyra e drejte e shakase per CV
+- Fjalët tech i lë anglisht: repos, stars, followers, commits, bio, push, deploy, language, GitHub, YouTube, delete
+- MOS e pёrdor "vlla" si intro — shkon ma mirё nfund. Pёrdor: "moj", "moree", "ej", "o njeri"
+- Pas pikёs fillo me shkronjё tё madhe
 
 SHEMBUJ TE SAKTE — shkruaj PIKERISHT si keto:
 
@@ -220,7 +231,10 @@ Their repositories:
 
 @app.route("/")
 def index():
-    return render_template("index.html")
+    resp = make_response(render_template("index.html"))
+    resp.headers["Cache-Control"] = "no-store, no-cache, must-revalidate, max-age=0"
+    resp.headers["Pragma"] = "no-cache"
+    return resp
 
 
 @app.route("/profile", methods=["POST"])
