@@ -6,680 +6,1003 @@
   <title>Roast My GitHub</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
       theme: {
         extend: {
           fontFamily: {
-            mono: ['JetBrains Mono', 'monospace'],
-            sans: ['IBM Plex Sans', 'sans-serif'],
-          },
-          colors: {
-            bg:      '#09090F',
-            surface: '#111118',
-            card:    '#16161F',
-            border:  '#2A2A3A',
-            fire:    '#FF6B35',
-            ember:   '#E8571F',
-            amber:   '#FFB347',
-            bright:  '#F1F1F3',
-            muted:   '#8B8BA7',
-            subtle:  '#3A3A50',
+            mono:  ['JetBrains Mono', 'monospace'],
+            sans:  ['Inter', 'sans-serif'],
           },
         },
       },
     };
   </script>
   <style>
-    /* ─── Reset ─── */
-    *, *::before, *::after { box-sizing: border-box; }
+    :root {
+      --bg:       #080810;
+      --surface:  #0F0F1A;
+      --card:     #13131F;
+      --card-2:   #1A1A28;
+      --border:   #252535;
+      --border-2: #2E2E42;
+      --fire:     #FF6B35;
+      --ember:    #E8541C;
+      --amber:    #FFA040;
+      --bright:   #EFEFEF;
+      --muted:    #888899;
+      --subtle:   #444455;
+      --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+      --ease-io:  cubic-bezier(0.77, 0, 0.175, 1);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     html { scroll-behavior: smooth; }
 
     body {
-      background-color: #09090F;
-      color: #F1F1F3;
+      background: var(--bg);
+      color: var(--bright);
+      font-family: 'Inter', sans-serif;
       min-height: 100vh;
-      font-family: 'IBM Plex Sans', sans-serif;
       -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
     }
 
-    /* ─── Custom easing ─── */
-    :root {
-      --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
-      --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
-    }
-
-    /* ─── Background grid ─── */
-    .grid-bg {
+    /* ── Grid background ── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
       background-image:
-        linear-gradient(rgba(42,42,58,0.35) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(42,42,58,0.35) 1px, transparent 1px);
-      background-size: 40px 40px;
-    }
-
-    /* ─── Fire glow behind header ─── */
-    .header-glow {
-      position: fixed;
-      top: 0; left: 50%;
-      transform: translateX(-50%);
-      width: 560px; height: 280px;
-      background: radial-gradient(ellipse at 50% 0%, rgba(255,107,53,0.11) 0%, transparent 68%);
+        linear-gradient(rgba(80,80,140,0.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(80,80,140,0.06) 1px, transparent 1px);
+      background-size: 48px 48px;
       pointer-events: none;
       z-index: 0;
     }
 
-    /* ─── Shimmer skeleton ─── */
-    .shimmer-bg {
-      background: linear-gradient(90deg, #16161F 25%, #1F1F2E 50%, #16161F 75%);
-      background-size: 600px 100%;
-      animation: shimmer 1.5s linear infinite;
+    /* ── Atmospheric glow ── */
+    body::after {
+      content: '';
+      position: fixed;
+      top: -120px; left: 50%;
+      transform: translateX(-50%);
+      width: 700px; height: 500px;
+      background: radial-gradient(ellipse at 50% 20%,
+        rgba(255,107,53,0.15) 0%,
+        rgba(255,107,53,0.04) 40%,
+        transparent 70%);
+      pointer-events: none;
+      z-index: 0;
     }
 
-    /* ─── Keyframes ─── */
+    /* ── Layout ── */
+    .layout {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 520px;
+      padding: 0 20px;
+    }
+
+    /* ── Header ── */
+    header {
+      padding: 72px 0 40px;
+      text-align: center;
+    }
+
+    .title {
+      font-family: 'Inter', sans-serif;
+      font-weight: 900;
+      font-size: clamp(2.6rem, 9vw, 4rem);
+      letter-spacing: -0.04em;
+      line-height: 1;
+      color: var(--bright);
+      margin-bottom: 16px;
+    }
+
+    .title-fire {
+      color: var(--fire);
+    }
+
+    .subtitle {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--muted);
+      letter-spacing: 0.01em;
+      line-height: 1.6;
+    }
+
+    .subtitle span {
+      color: rgba(255,107,53,0.5);
+    }
+
+    /* ── Input card ── */
+    .input-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow:
+        0 0 0 1px rgba(255,107,53,0.06) inset,
+        0 24px 60px rgba(0,0,0,0.5),
+        0 8px 20px rgba(0,0,0,0.3);
+    }
+
+    /* ── Label ── */
+    .field-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.62rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--subtle);
+      display: block;
+      margin-bottom: 10px;
+    }
+
+    /* ── Input row ── */
+    .input-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+
+    .input-wrap {
+      position: relative;
+      flex: 1;
+    }
+
+    .input-at {
+      position: absolute;
+      left: 14px; top: 50%;
+      transform: translateY(-50%);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      color: var(--subtle);
+      pointer-events: none;
+      user-select: none;
+    }
+
+    #username {
+      width: 100%;
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 13px 14px 13px 30px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.875rem;
+      color: var(--bright);
+      transition: border-color 160ms var(--ease-out),
+                  box-shadow   160ms var(--ease-out);
+    }
+
+    #username::placeholder { color: var(--subtle); }
+
+    #username:focus {
+      outline: none;
+      border-color: rgba(255,107,53,0.5);
+      box-shadow:
+        0 0 0 4px rgba(255,107,53,0.1),
+        0 0 24px rgba(255,107,53,0.06);
+    }
+
+    /* ── CTA button ── */
+    #roastBtn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--fire);
+      color: #fff;
+      font-family: 'Inter', sans-serif;
+      font-weight: 700;
+      font-size: 0.875rem;
+      padding: 13px 20px;
+      border-radius: 12px;
+      border: none;
+      cursor: pointer;
+      white-space: nowrap;
+      box-shadow:
+        0 0 0 1px rgba(255,107,53,0.3),
+        0 4px 20px rgba(255,107,53,0.4),
+        0 0 48px rgba(255,107,53,0.15);
+      transition:
+        background-color 140ms var(--ease-out),
+        box-shadow       140ms var(--ease-out),
+        transform        100ms var(--ease-out);
+    }
+
+    #roastBtn:active:not(:disabled) { transform: scale(0.95); }
+    #roastBtn:disabled {
+      opacity: 0.45; cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      #roastBtn:hover:not(:disabled) {
+        background: var(--ember);
+        box-shadow:
+          0 0 0 1px rgba(255,107,53,0.4),
+          0 4px 28px rgba(255,107,53,0.55),
+          0 0 60px rgba(255,107,53,0.2);
+      }
+    }
+
+    /* ── Style pills label ── */
+    .pills-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.62rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--subtle);
+      margin-bottom: 10px;
+    }
+
+    /* ── Pills grid ── */
+    .pills-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .pill {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      font-weight: 500;
+      padding: 9px 4px;
+      border-radius: 10px;
+      border: 1.5px solid var(--border);
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      text-align: center;
+      transition:
+        border-color     130ms var(--ease-out),
+        background-color 130ms var(--ease-out),
+        color            130ms var(--ease-out),
+        transform        90ms  var(--ease-out);
+    }
+
+    .pill:active { transform: scale(0.94); }
+
+    .pill.active {
+      background: var(--fire);
+      border-color: var(--fire);
+      color: #fff;
+      font-weight: 700;
+      box-shadow: 0 2px 12px rgba(255,107,53,0.35);
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      .pill:hover:not(.active) {
+        border-color: var(--border-2);
+        color: var(--bright);
+        background: rgba(255,255,255,0.04);
+      }
+    }
+
+    /* ── Result area ── */
+    #resultArea {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    #resultArea.hidden { display: none; }
+
+    /* ── Skeleton ── */
+    .shimmer {
+      background: linear-gradient(90deg,
+        var(--card) 25%,
+        var(--card-2) 50%,
+        var(--card) 75%);
+      background-size: 600px 100%;
+      animation: shimmer 1.4s linear infinite;
+      border-radius: 8px;
+    }
+
     @keyframes shimmer {
       from { background-position: -600px 0; }
       to   { background-position:  600px 0; }
     }
 
+    #skeleton {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 24px;
+    }
+
+    /* ── Error card ── */
+    #errorCard {
+      background: var(--card);
+      border: 1px solid rgba(239,68,68,0.3);
+      border-radius: 20px;
+      padding: 20px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    /* ── Roast card ── */
+    #roastCard {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      overflow: hidden;
+      animation: fadeUp 0.38s var(--ease-out) both;
+    }
+
     @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(16px); }
+      from { opacity: 0; transform: translateY(18px); }
       to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Fire bar */
+    .fire-bar {
+      height: 2px;
+      background: linear-gradient(90deg,
+        var(--ember) 0%,
+        var(--fire) 35%,
+        var(--amber) 65%,
+        transparent 100%);
+    }
+
+    /* Card header */
+    .card-header {
+      padding: 20px 20px 16px;
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+    }
+
+    .avatar-wrap {
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    #avatar {
+      width: 56px;
+      height: 56px;
+      border-radius: 14px;
+      border: 2px solid var(--border-2);
+      object-fit: cover;
+      display: block;
+      animation: popIn 0.36s var(--ease-out) both;
     }
 
     @keyframes popIn {
-      0%   { opacity: 0; transform: scale(0.88); }
-      65%  { transform: scale(1.03); }
+      0%   { opacity: 0; transform: scale(0.82); }
+      70%  { transform: scale(1.04); }
       100% { opacity: 1; transform: scale(1); }
     }
 
-    @keyframes loadDot {
-      0%, 100% { opacity: 0.25; transform: scale(0.75); }
-      50%       { opacity: 1;    transform: scale(1); }
+    .fire-badge {
+      position: absolute;
+      bottom: -4px; right: -4px;
+      width: 20px; height: 20px;
+      background: var(--bg);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
-    @keyframes slideUp {
-      from { opacity: 0; transform: translateY(10px); }
-      to   { opacity: 1; transform: translateY(0); }
+    .card-meta { flex: 1; min-width: 0; }
+
+    .card-name {
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--bright);
+      letter-spacing: -0.01em;
+      margin-bottom: 3px;
     }
 
-    /* ─── Input ─── */
-    #username {
-      transition: border-color 160ms var(--ease-out),
-                  box-shadow   160ms var(--ease-out);
-    }
-    #username:focus {
-      outline: none;
-      border-color: rgba(255,107,53,0.55);
-      box-shadow: 0 0 0 3px rgba(255,107,53,0.12), 0 0 20px rgba(255,107,53,0.08);
-    }
-
-    /* ─── CTA button ─── */
-    #roastBtn {
-      box-shadow: 0 0 20px rgba(255,107,53,0.4), 0 0 40px rgba(255,107,53,0.15);
-      transition: background-color 160ms var(--ease-out),
-                  box-shadow       160ms var(--ease-out),
-                  transform        120ms var(--ease-out),
-                  opacity          160ms var(--ease-out);
-    }
-    #roastBtn:active:not(:disabled) {
-      transform: scale(0.96);
-    }
-    #roastBtn:disabled {
-      box-shadow: none;
-      opacity: 0.45;
-      cursor: not-allowed;
-    }
-    @media (hover: hover) and (pointer: fine) {
-      #roastBtn:hover:not(:disabled) {
-        background-color: #E8571F;
-        box-shadow: 0 0 28px rgba(255,107,53,0.6), 0 0 56px rgba(255,107,53,0.22);
-      }
-    }
-
-    /* ─── Style pills ─── */
-    .style-pill {
-      border: 1.5px solid #2A2A3A;
+    .card-handle {
       font-family: 'JetBrains Mono', monospace;
       font-size: 0.72rem;
-      width: 100%;
-      text-align: center;
-      transition: border-color     150ms var(--ease-out),
-                  background-color 150ms var(--ease-out),
-                  color            150ms var(--ease-out),
-                  transform        100ms var(--ease-out);
-    }
-    .style-pill:active {
-      transform: scale(0.96);
-    }
-    .style-pill.active {
-      border-color: #FF6B35;
-      background: rgba(255,107,53,0.1);
-      color: #FF6B35;
-    }
-    @media (hover: hover) and (pointer: fine) {
-      .style-pill:hover:not(.active) {
-        border-color: #3A3A50;
-        color: #F1F1F3;
-        background: rgba(255,255,255,0.04);
-      }
+      color: var(--muted);
+      margin-bottom: 10px;
     }
 
-    /* ─── Action buttons ─── */
-    .action-btn {
-      transition: border-color 150ms var(--ease-out),
-                  color        150ms var(--ease-out),
-                  background   150ms var(--ease-out),
-                  transform    100ms var(--ease-out);
-    }
-    .action-btn:active {
-      transform: scale(0.96);
-    }
-    @media (hover: hover) and (pointer: fine) {
-      .action-btn:hover {
-        border-color: #3A3A50;
-        color: #F1F1F3;
-      }
-      .action-btn.fire-border:hover {
-        border-color: #FF6B35;
-        background: rgba(255,107,53,0.07);
-      }
+    .stats-row {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
     }
 
-    /* ─── Example username pills ─── */
-    .example-btn {
-      transition: border-color 150ms var(--ease-out),
-                  color        150ms var(--ease-out),
-                  transform    100ms var(--ease-out);
-    }
-    .example-btn:active { transform: scale(0.95); }
-    @media (hover: hover) and (pointer: fine) {
-      .example-btn:hover {
-        border-color: #3A3A50;
-        color: #F1F1F3;
-      }
-    }
-
-    /* ─── Stat chips ─── */
     .stat-chip {
-      background: rgba(255,107,53,0.07);
-      border: 1px solid rgba(255,107,53,0.18);
-      border-radius: 6px;
-      padding: 3px 10px;
       font-family: 'JetBrains Mono', monospace;
-      font-size: 0.67rem;
-      color: #FFB347;
+      font-size: 0.65rem;
+      padding: 3px 9px;
+      border-radius: 6px;
+      background: rgba(255,107,53,0.07);
+      border: 1px solid rgba(255,107,53,0.16);
+      color: var(--amber);
       letter-spacing: 0.01em;
     }
 
-    /* ─── Roast card entrance ─── */
-    #roastCard {
-      animation: fadeUp 0.4s var(--ease-out) forwards;
+    .al-badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.62rem;
+      padding: 2px 8px;
+      border-radius: 20px;
+      background: rgba(255,107,53,0.1);
+      border: 1px solid rgba(255,107,53,0.25);
+      color: var(--fire);
     }
 
-    /* ─── Avatar pop ─── */
-    .avatar-pop {
-      animation: popIn 0.4s var(--ease-out) forwards;
+    .style-badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.62rem;
+      padding: 5px 10px;
+      border-radius: 8px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--subtle);
+      flex-shrink: 0;
     }
 
-    /* ─── Loading dots ─── */
-    .load-dot {
+    /* Card divider */
+    .card-divider {
+      height: 1px;
+      background: var(--border);
+      margin: 0 20px;
+    }
+
+    /* Roast text */
+    .roast-body {
+      padding: 20px;
+    }
+
+    #roastContent {
+      font-size: 0.9rem;
+      line-height: 1.75;
+      color: rgba(239,239,239,0.85);
+    }
+
+    #roastContent p + p,
+    #roastContent p + br + p {
+      margin-top: 14px;
+    }
+
+    #roastContent br { display: block; height: 6px; }
+
+    /* Action bar */
+    .action-bar {
+      padding: 0 20px 20px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .action-btn {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      padding: 8px 14px;
+      border-radius: 10px;
+      border: 1.5px solid var(--border);
+      color: var(--muted);
+      background: transparent;
+      cursor: pointer;
+      text-decoration: none;
+      transition:
+        border-color 130ms var(--ease-out),
+        color        130ms var(--ease-out),
+        background   130ms var(--ease-out),
+        transform    90ms  var(--ease-out);
+    }
+
+    .action-btn:active { transform: scale(0.95); }
+
+    .action-btn.fire {
+      color: var(--fire);
+      border-color: rgba(255,107,53,0.3);
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      .action-btn:hover:not(.fire) {
+        border-color: var(--border-2);
+        color: var(--bright);
+      }
+      .action-btn.fire:hover {
+        border-color: var(--fire);
+        background: rgba(255,107,53,0.07);
+        color: var(--fire);
+      }
+    }
+
+    /* ── Loading dots ── */
+    .loading-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 0;
+    }
+
+    .dots {
+      display: flex;
+      gap: 5px;
+    }
+
+    .dot {
       width: 7px; height: 7px;
       border-radius: 50%;
-      background: #FF6B35;
-      animation: loadDot 1.1s var(--ease-in-out) infinite;
+      background: var(--fire);
+      animation: dotPulse 1.1s var(--ease-io) infinite;
     }
-    .load-dot:nth-child(2) { animation-delay: 0.18s; }
-    .load-dot:nth-child(3) { animation-delay: 0.36s; }
+    .dot:nth-child(2) { animation-delay: 0.18s; }
+    .dot:nth-child(3) { animation-delay: 0.36s; }
 
-    /* ─── Roast text ─── */
-    .roast-text p {
-      opacity: 1;
-      transform: none;
-      line-height: 1.7;
-    }
-    .roast-text p.slide-in {
-      animation: slideUp 0.35s var(--ease-out) both;
+    @keyframes dotPulse {
+      0%,100% { opacity: 0.2; transform: scale(0.7); }
+      50%      { opacity: 1;   transform: scale(1.1); }
     }
 
-    /* ─── Reduced motion ─── */
+    .loading-text {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    /* ── Examples ── */
+    .examples {
+      text-align: center;
+      padding: 8px 0 4px;
+    }
+
+    .examples-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.65rem;
+      color: rgba(136,136,153,0.35);
+      margin-bottom: 10px;
+    }
+
+    .examples-row {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .example-pill {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      padding: 6px 14px;
+      border-radius: 20px;
+      border: 1.5px solid var(--border);
+      color: rgba(136,136,153,0.55);
+      background: transparent;
+      cursor: pointer;
+      transition:
+        border-color 130ms var(--ease-out),
+        color        130ms var(--ease-out),
+        transform    90ms  var(--ease-out);
+    }
+
+    .example-pill:active { transform: scale(0.94); }
+
+    @media (hover: hover) and (pointer: fine) {
+      .example-pill:hover {
+        border-color: var(--border-2);
+        color: var(--bright);
+      }
+    }
+
+    /* ── Footer ── */
+    footer {
+      margin-top: auto;
+      padding: 24px 20px 36px;
+      width: 100%;
+      max-width: 520px;
+      text-align: center;
+      border-top: 1px solid rgba(37,37,53,0.7);
+    }
+
+    .footer-text {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.65rem;
+      color: rgba(255,107,53,0.35);
+      letter-spacing: 0.05em;
+    }
+
+    /* ── Utility ── */
+    .hidden { display: none !important; }
+
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after {
-        animation-duration:       0.01ms !important;
-        animation-iteration-count: 1     !important;
-        transition-duration:      0.01ms !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
       }
     }
   </style>
 </head>
 
 <body>
-  <div class="fixed inset-0 grid-bg opacity-40 pointer-events-none z-0"></div>
-  <div class="header-glow"></div>
+<div class="layout">
 
-  <div class="relative z-10 min-h-screen flex flex-col items-center w-full">
+  <!-- HEADER -->
+  <header class="container">
+    <h1 class="title">Roast My <span class="title-fire">GitHub</span></h1>
+    <p class="subtitle">
+      Drop a username. Get publicly humiliated.<br>
+      <span>// powered by Claude · no mercy included</span>
+    </p>
+  </header>
 
-    <!-- ── HEADER ── -->
-    <header class="pt-16 pb-8 px-4 w-full max-w-lg mx-auto">
-      <div class="flex flex-col items-center text-center gap-4">
-        <div>
-          <h1 class="font-mono font-bold leading-none tracking-tight" style="font-size: clamp(2rem, 8vw, 3rem);">
-            Roast My <span style="color: #FF6B35;">GitHub</span>
-          </h1>
+  <!-- MAIN -->
+  <main class="container" style="padding-bottom: 80px; display: flex; flex-direction: column; gap: 12px;">
+
+    <!-- Input card -->
+    <div class="input-card">
+
+      <!-- Username input -->
+      <label class="field-label" for="username">GitHub Username</label>
+      <div class="input-row">
+        <div class="input-wrap">
+          <span class="input-at">@</span>
+          <input
+            id="username"
+            type="text"
+            placeholder="torvalds"
+            autocomplete="off"
+            spellcheck="false"
+          />
         </div>
-        <p class="text-muted text-sm leading-relaxed max-w-xs" style="color: #8B8BA7;">
-          Drop a username. Get publicly humiliated.<br>
-          <span style="color: rgba(255,107,53,0.5); font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; letter-spacing: 0.02em;">// powered by Claude · no mercy included</span>
-        </p>
+        <button id="roastBtn" onclick="handleRoast()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12.017 0C9.389 3.108 8.5 6.5 9.5 9.5c.5 1.5 1.5 2.5 1 4C8 12 6.5 9.5 6.5 9.5 5.5 14 7 17 9 19c-1.5-.5-2.5-1.5-3-3C4.5 20 7 23 12 24c5 0 8-3 8-7 0-2.5-1.5-4.5-3-5.5.5 2-1 3.5-2 4C16.5 13 15 9 12.017 0z"/>
+          </svg>
+          <span id="btnText">Roast 'em</span>
+        </button>
       </div>
-    </header>
 
-    <!-- ── MAIN ── -->
-    <main class="w-full max-w-lg px-4 pb-20 flex flex-col gap-4">
+      <!-- Style pills -->
+      <p class="pills-label">Roast Style</p>
+      <div class="pills-grid" id="pillsGrid">
+        <button class="pill active" data-style="savage">Savage</button>
+        <button class="pill" data-style="pirate">Pirate</button>
+        <button class="pill" data-style="corporate">Corporate</button>
+        <button class="pill" data-style="haiku">Haiku</button>
+        <button class="pill" data-style="shakespearean">Shakespeare</button>
+        <button class="pill" data-style="albanian">Albanian</button>
+      </div>
+    </div>
 
-      <!-- Input card -->
-      <div class="bg-card rounded-2xl border border-border p-6" style="box-shadow: 0 1px 40px rgba(0,0,0,0.4);">
+    <!-- Result area -->
+    <div id="resultArea" class="hidden">
 
-        <!-- Username -->
-        <div class="mb-5">
-          <label for="username" class="block font-mono text-xs tracking-widest uppercase mb-2" style="color: rgba(139,139,167,0.6); font-size: 0.65rem;">GitHub Username</label>
-          <div class="flex gap-2.5">
-            <div class="relative flex-1">
-              <span class="absolute left-3.5 top-1/2 -translate-y-1/2 font-mono text-sm select-none" style="color: rgba(139,139,167,0.4);">@</span>
-              <input
-                id="username"
-                type="text"
-                placeholder="torvalds"
-                autocomplete="off"
-                spellcheck="false"
-                class="w-full font-mono text-sm rounded-xl pl-8 pr-4 py-3"
-                style="background: #111118; border: 1.5px solid #2A2A3A; color: #F1F1F3;"
-              />
-            </div>
-            <button
-              id="roastBtn"
-              onclick="handleRoast()"
-              class="font-bold font-sans rounded-xl text-sm cursor-pointer whitespace-nowrap flex items-center gap-2 px-5 py-3"
-              style="background: #FF6B35; color: #fff;"
-            >
-              <svg class="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
+      <!-- Skeleton -->
+      <div id="skeleton" class="hidden">
+        <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;">
+          <div class="shimmer" style="width:56px;height:56px;border-radius:14px;flex-shrink:0;"></div>
+          <div style="flex:1;display:flex;flex-direction:column;gap:8px;">
+            <div class="shimmer" style="height:16px;width:130px;"></div>
+            <div class="shimmer" style="height:12px;width:90px;"></div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px;">
+          <div class="shimmer" style="height:12px;width:100%;"></div>
+          <div class="shimmer" style="height:12px;width:88%;"></div>
+          <div class="shimmer" style="height:12px;width:76%;"></div>
+          <div class="shimmer" style="height:12px;width:100%;"></div>
+          <div class="shimmer" style="height:12px;width:82%;"></div>
+        </div>
+      </div>
+
+      <!-- Error -->
+      <div id="errorCard" class="hidden">
+        <svg width="20" height="20" style="color:#F87171;flex-shrink:0;margin-top:1px;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/>
+        </svg>
+        <p id="errorMsg" style="font-size:0.875rem;line-height:1.5;color:#F87171;"></p>
+      </div>
+
+      <!-- Roast card -->
+      <div id="roastCard" class="hidden">
+        <div class="fire-bar"></div>
+
+        <div class="card-header">
+          <div class="avatar-wrap">
+            <img id="avatar" src="" alt="avatar" />
+            <div class="fire-badge">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="#FF6B35">
                 <path d="M12.017 0C9.389 3.108 8.5 6.5 9.5 9.5c.5 1.5 1.5 2.5 1 4C8 12 6.5 9.5 6.5 9.5 5.5 14 7 17 9 19c-1.5-.5-2.5-1.5-3-3C4.5 20 7 23 12 24c5 0 8-3 8-7 0-2.5-1.5-4.5-3-5.5.5 2-1 3.5-2 4C16.5 13 15 9 12.017 0z"/>
               </svg>
-              <span id="btnText">Roast 'em</span>
-            </button>
-          </div>
-        </div>
-
-        <!-- Roast style -->
-        <div>
-          <p class="font-mono uppercase tracking-widest mb-2" style="font-size: 0.65rem; color: rgba(139,139,167,0.6);">Roast Style</p>
-          <div class="grid grid-cols-3 gap-2" id="stylePills">
-            <button class="style-pill active text-fire py-2 rounded-xl cursor-pointer" data-style="savage">Savage</button>
-            <button class="style-pill text-muted py-2 rounded-xl cursor-pointer" data-style="pirate">Pirate</button>
-            <button class="style-pill text-muted py-2 rounded-xl cursor-pointer" data-style="corporate">Corporate</button>
-            <button class="style-pill text-muted py-2 rounded-xl cursor-pointer" data-style="haiku">Haiku</button>
-            <button class="style-pill text-muted py-2 rounded-xl cursor-pointer" data-style="shakespearean">Shakespeare</button>
-            <button class="style-pill text-muted py-2 rounded-xl cursor-pointer" data-style="albanian">Albanian</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Result area -->
-      <div id="resultArea" class="hidden flex flex-col gap-4">
-
-        <!-- Skeleton -->
-        <div id="skeleton" class="hidden bg-card rounded-2xl border border-border p-6">
-          <div class="flex items-center gap-4 mb-5">
-            <div class="w-14 h-14 rounded-xl shimmer-bg flex-shrink-0"></div>
-            <div class="flex-1 space-y-2.5">
-              <div class="h-4 shimmer-bg rounded-lg w-32"></div>
-              <div class="h-3 shimmer-bg rounded-lg w-20"></div>
             </div>
           </div>
-          <div class="space-y-2.5">
-            <div class="h-3 shimmer-bg rounded-lg w-full"></div>
-            <div class="h-3 shimmer-bg rounded-lg" style="width:91%"></div>
-            <div class="h-3 shimmer-bg rounded-lg" style="width:78%"></div>
-            <div class="h-3 shimmer-bg rounded-lg w-full"></div>
-            <div class="h-3 shimmer-bg rounded-lg" style="width:83%"></div>
+
+          <div class="card-meta">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:wrap;">
+              <p id="displayName" class="card-name"></p>
+              <span id="albanianBadge" class="al-badge hidden">AL</span>
+            </div>
+            <p id="displayHandle" class="card-handle"></p>
+            <div class="stats-row">
+              <span id="statRepos" class="stat-chip"></span>
+              <span id="statFollowers" class="stat-chip"></span>
+              <span id="statLocation" class="stat-chip hidden"></span>
+            </div>
           </div>
+
+          <span id="styleBadge" class="style-badge"></span>
         </div>
 
-        <!-- Error -->
-        <div id="errorCard" class="hidden bg-card rounded-2xl p-5" style="border: 1.5px solid rgba(239,68,68,0.35);">
-          <div class="flex items-start gap-3">
-            <svg class="w-5 h-5 flex-shrink-0 mt-0.5" style="color:#F87171;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/>
+        <div class="card-divider"></div>
+
+        <div class="roast-body">
+          <div id="roastContent"></div>
+        </div>
+
+        <div class="action-bar">
+          <button onclick="copyRoast()" class="action-btn">
+            <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
             </svg>
-            <p id="errorMsg" class="text-sm leading-relaxed font-sans" style="color: #F87171;"></p>
-          </div>
-        </div>
+            <span id="copyLabel">Copy</span>
+          </button>
 
-        <!-- Roast result -->
-        <div id="roastCard" class="hidden bg-card rounded-2xl border border-border overflow-hidden">
+          <button onclick="generateAnotherRoast()" class="action-btn fire">
+            <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+            </svg>
+            Another Roast
+          </button>
 
-          <!-- Accent bar -->
-          <div class="h-px w-full" style="background: linear-gradient(90deg, #FF4500 0%, #FF6B35 40%, #FFB347 70%, transparent 100%);"></div>
-
-          <!-- User header -->
-          <div class="p-5 pb-4">
-            <div class="flex items-start gap-4">
-              <div class="relative flex-shrink-0">
-                <img id="avatar" src="" alt="GitHub avatar" class="avatar-pop w-14 h-14 rounded-xl border border-border object-cover" />
-                <div class="absolute -bottom-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center" style="background:#09090F;">
-                  <svg viewBox="0 0 24 24" class="w-3.5 h-3.5" fill="#FF6B35">
-                    <path d="M12.017 0C9.389 3.108 8.5 6.5 9.5 9.5c.5 1.5 1.5 2.5 1 4C8 12 6.5 9.5 6.5 9.5 5.5 14 7 17 9 19c-1.5-.5-2.5-1.5-3-3C4.5 20 7 23 12 24c5 0 8-3 8-7 0-2.5-1.5-4.5-3-5.5.5 2-1 3.5-2 4C16.5 13 15 9 12.017 0z"/>
-                  </svg>
-                </div>
-              </div>
-
-              <div class="flex-1 min-w-0">
-                <div class="flex items-center gap-2 flex-wrap mb-1">
-                  <h2 id="displayName" class="font-bold text-base leading-tight" style="color:#F1F1F3;"></h2>
-                  <span id="albanianBadge" class="hidden font-mono text-xs px-2 py-0.5 rounded-full" style="background:rgba(255,107,53,0.1);color:#FF6B35;border:1px solid rgba(255,107,53,0.25);">AL</span>
-                </div>
-                <p id="displayHandle" class="font-mono text-xs mb-2.5" style="color:#8B8BA7;"></p>
-                <div class="flex gap-2 flex-wrap">
-                  <span id="statRepos" class="stat-chip"></span>
-                  <span id="statFollowers" class="stat-chip"></span>
-                  <span id="statLocation" class="hidden stat-chip"></span>
-                </div>
-              </div>
-
-              <span id="styleBadge" class="flex-shrink-0 font-mono text-xs px-2.5 py-1 rounded-lg" style="color:rgba(139,139,167,0.55);background:#111118;border:1px solid #2A2A3A;font-size:0.65rem;"></span>
-            </div>
-          </div>
-
-          <!-- Divider -->
-          <div class="mx-5" style="border-top:1px solid rgba(42,42,58,0.8);"></div>
-
-          <!-- Roast text -->
-          <div class="p-5">
-            <div id="roastContent" class="roast-text text-sm font-sans space-y-3" style="color:rgba(241,241,243,0.82);"></div>
-          </div>
-
-          <!-- Actions -->
-          <div class="px-5 pb-5 flex gap-2 flex-wrap">
-            <button onclick="copyRoast()" class="action-btn flex items-center gap-2 font-mono text-xs px-4 py-2 rounded-xl cursor-pointer" style="color:#8B8BA7;border:1.5px solid #2A2A3A;">
-              <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
-              </svg>
-              <span id="copyLabel">Copy</span>
-            </button>
-
-            <button onclick="generateAnotherRoast()" class="action-btn fire-border flex items-center gap-2 font-mono text-xs px-4 py-2 rounded-xl cursor-pointer" style="color:#FF6B35;border:1.5px solid rgba(255,107,53,0.3);">
-              <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
-              </svg>
-              Another Roast
-            </button>
-
-            <a id="githubLink" href="#" target="_blank" rel="noopener noreferrer"
-               class="action-btn flex items-center gap-2 font-mono text-xs px-4 py-2 rounded-xl cursor-pointer" style="color:#8B8BA7;border:1.5px solid #2A2A3A;">
-              <svg class="w-3.5 h-3.5 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/>
-              </svg>
-              View Profile
-            </a>
-          </div>
-        </div>
-
-      </div>
-
-      <!-- Example users -->
-      <div id="examples" class="text-center pt-2">
-        <p class="font-mono mb-3" style="font-size:0.68rem;color:rgba(139,139,167,0.35);">// try a legend</p>
-        <div class="flex flex-wrap gap-2 justify-center">
-          <button onclick="tryExample('torvalds')" class="example-btn font-mono text-xs px-4 py-1.5 rounded-full cursor-pointer" style="color:rgba(139,139,167,0.55);border:1.5px solid #2A2A3A;">torvalds</button>
-          <button onclick="tryExample('gaearon')" class="example-btn font-mono text-xs px-4 py-1.5 rounded-full cursor-pointer" style="color:rgba(139,139,167,0.55);border:1.5px solid #2A2A3A;">gaearon</button>
-          <button onclick="tryExample('yyx990803')" class="example-btn font-mono text-xs px-4 py-1.5 rounded-full cursor-pointer" style="color:rgba(139,139,167,0.55);border:1.5px solid #2A2A3A;">yyx990803</button>
+          <a id="githubLink" href="#" target="_blank" rel="noopener noreferrer" class="action-btn">
+            <svg width="13" height="13" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/>
+            </svg>
+            View Profile
+          </a>
         </div>
       </div>
 
-    </main>
+    </div>
 
-    <!-- Footer -->
-    <footer class="w-full max-w-lg mx-auto px-4 pb-10 pt-4">
-      <div class="pt-6 text-center" style="border-top:1px solid rgba(42,42,58,0.5);">
-        <p class="font-mono" style="font-size:0.68rem;color:rgba(255,107,53,0.45);">
-          zero chill. maximum damage. 100% accurate.
-        </p>
+    <!-- Examples -->
+    <div class="examples">
+      <p class="examples-label">// try a legend</p>
+      <div class="examples-row">
+        <button class="example-pill" onclick="tryExample('torvalds')">torvalds</button>
+        <button class="example-pill" onclick="tryExample('gaearon')">gaearon</button>
+        <button class="example-pill" onclick="tryExample('yyx990803')">yyx990803</button>
       </div>
-    </footer>
+    </div>
 
-  </div>
+  </main>
 
-  <script>
-    let selectedStyle = 'savage';
-    let currentRoast = '';
-    let cachedProfileData = null;
+  <!-- FOOTER -->
+  <footer>
+    <p class="footer-text">zero chill. maximum damage. 100% accurate.</p>
+  </footer>
 
-    /* ── Loading HTML helper ── */
-    function loadingHTML(msg) {
-      return `<div class="flex items-center gap-3 py-4">
-        <div class="flex gap-1.5">
-          <span class="load-dot"></span>
-          <span class="load-dot"></span>
-          <span class="load-dot"></span>
-        </div>
-        <span class="font-mono text-xs" style="color:#8B8BA7;">${msg}</span>
-      </div>`;
-    }
+</div>
 
-    /* ── Style pills ── */
-    document.querySelectorAll('.style-pill').forEach(pill => {
-      pill.addEventListener('click', () => {
-        document.querySelectorAll('.style-pill').forEach(p => {
-          p.classList.remove('active');
-          p.style.color = '#8B8BA7';
-        });
-        pill.classList.add('active');
-        pill.style.color = '#FF6B35';
-        selectedStyle = pill.dataset.style;
+<script>
+  let selectedStyle = 'savage';
+  let currentRoast = '';
+  let cachedProfileData = null;
 
-        if (cachedProfileData) generateAnotherRoast();
-      });
+  /* ── Helpers ── */
+  const $ = id => document.getElementById(id);
+
+  function loadingHTML(msg) {
+    return `<div class="loading-wrap">
+      <div class="dots">
+        <span class="dot"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+      </div>
+      <span class="loading-text">${msg}</span>
+    </div>`;
+  }
+
+  function renderStream(text, el) {
+    el.innerHTML = '';
+    text.split('\n').forEach(line => {
+      if (!line.trim()) {
+        el.appendChild(document.createElement('br'));
+      } else {
+        const p = document.createElement('p');
+        p.innerHTML = line
+          .replace(/^#+\s*/, '')
+          .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        el.appendChild(p);
+      }
+    });
+  }
+
+  /* ── Style pills ── */
+  document.querySelectorAll('.pill').forEach(pill => {
+    pill.addEventListener('click', () => {
+      document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+      pill.classList.add('active');
+      selectedStyle = pill.dataset.style;
+      if (cachedProfileData) generateAnotherRoast();
+    });
+  });
+
+  document.getElementById('username').addEventListener('keydown', e => {
+    if (e.key === 'Enter') handleRoast();
+  });
+
+  function tryExample(username) {
+    $('username').value = username;
+    handleRoast();
+  }
+
+  /* ── UI state ── */
+  function showError(msg) {
+    $('resultArea').classList.remove('hidden');
+    $('skeleton').classList.add('hidden');
+    $('roastCard').classList.add('hidden');
+    $('errorCard').classList.remove('hidden');
+    $('errorMsg').textContent = msg;
+  }
+
+  function showProfileCard(data) {
+    cachedProfileData = data;
+    $('resultArea').classList.remove('hidden');
+    $('skeleton').classList.add('hidden');
+    $('errorCard').classList.add('hidden');
+    $('roastCard').classList.remove('hidden');
+
+    const u = data.user;
+
+    // Re-trigger avatar animation
+    const av = $('avatar');
+    av.style.animation = 'none';
+    av.src = u.avatar_url;
+    av.alt = u.login + ' avatar';
+    requestAnimationFrame(() => {
+      av.style.animation = '';
     });
 
-    document.getElementById('username').addEventListener('keydown', e => {
-      if (e.key === 'Enter') handleRoast();
+    $('displayName').textContent = u.name || u.login;
+    $('displayHandle').textContent = '@' + u.login;
+    $('statRepos').textContent = u.public_repos + ' repos';
+    $('statFollowers').textContent = u.followers + ' followers';
+
+    const loc = $('statLocation');
+    if (u.location) { loc.textContent = u.location; loc.classList.remove('hidden'); }
+    else { loc.classList.add('hidden'); }
+
+    $('albanianBadge').classList.toggle('hidden', !data.albanian);
+    $('githubLink').href = 'https://github.com/' + u.login;
+
+    const labels = { savage:'savage', pirate:'pirate', corporate:'corporate', haiku:'haiku', shakespearean:'shakespeare', albanian:'albanian' };
+    $('styleBadge').textContent = labels[selectedStyle] || selectedStyle;
+
+    $('roastContent').innerHTML = loadingHTML('Claude is cooking something brutal...');
+    $('roastCard').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  /* ── Stream helper ── */
+  async function streamRoast(payload, contentEl) {
+    const res = await fetch('/roast', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
     });
 
-    function tryExample(username) {
-      document.getElementById('username').value = username;
-      handleRoast();
+    if (!res.ok) {
+      contentEl.innerHTML = '<p style="color:#F87171;font-size:.875rem;">Failed to generate roast. Try again.</p>';
+      return null;
     }
 
-    /* ── Show / hide states ── */
-    function showError(msg) {
-      document.getElementById('resultArea').classList.remove('hidden');
-      document.getElementById('skeleton').classList.add('hidden');
-      document.getElementById('roastCard').classList.add('hidden');
-      document.getElementById('errorCard').classList.remove('hidden');
-      document.getElementById('errorMsg').textContent = msg;
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+    let full = '';
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      full += decoder.decode(value, { stream: true });
+      renderStream(full, contentEl);
+    }
+    return full;
+  }
+
+  /* ── Main ── */
+  async function handleRoast() {
+    const username = $('username').value.trim();
+    if (!username) {
+      const inp = $('username');
+      inp.focus();
+      inp.style.borderColor = 'rgba(239,68,68,0.55)';
+      inp.style.boxShadow = '0 0 0 4px rgba(239,68,68,0.1)';
+      setTimeout(() => { inp.style.borderColor = ''; inp.style.boxShadow = ''; }, 900);
+      return;
     }
 
-    function showProfileCard(data) {
-      cachedProfileData = data;
-      document.getElementById('resultArea').classList.remove('hidden');
-      document.getElementById('skeleton').classList.add('hidden');
-      document.getElementById('errorCard').classList.add('hidden');
-      document.getElementById('roastCard').classList.remove('hidden');
+    const btn = $('roastBtn');
+    const btnText = $('btnText');
+    btn.disabled = true;
+    btnText.textContent = 'Fetching...';
 
-      const u = data.user;
-      const avatar = document.getElementById('avatar');
-      avatar.src = u.avatar_url;
-      avatar.alt = u.login + ' avatar';
-      avatar.classList.remove('avatar-pop');
-      void avatar.offsetWidth; // force reflow to re-trigger animation
-      avatar.classList.add('avatar-pop');
+    $('resultArea').classList.remove('hidden');
+    $('skeleton').classList.remove('hidden');
+    $('errorCard').classList.add('hidden');
+    $('roastCard').classList.add('hidden');
+    $('skeleton').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
-      document.getElementById('displayName').textContent = u.name || u.login;
-      document.getElementById('displayHandle').textContent = '@' + u.login;
-      document.getElementById('statRepos').textContent = u.public_repos + ' repos';
-      document.getElementById('statFollowers').textContent = u.followers + ' followers';
-
-      const locEl = document.getElementById('statLocation');
-      if (u.location) { locEl.textContent = u.location; locEl.classList.remove('hidden'); }
-      else { locEl.classList.add('hidden'); }
-
-      document.getElementById('albanianBadge').classList.toggle('hidden', !data.albanian);
-      document.getElementById('githubLink').href = 'https://github.com/' + u.login;
-
-      const labels = { savage:'savage', pirate:'pirate', corporate:'corporate', haiku:'haiku', shakespearean:'shakespeare', albanian:'albanian' };
-      document.getElementById('styleBadge').textContent = labels[selectedStyle] || selectedStyle;
-
-      document.getElementById('roastContent').innerHTML = loadingHTML('Claude is cooking something brutal...');
-      document.getElementById('roastCard').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    }
-
-    /* ── Stream renderer ── */
-    function renderStream(text, container) {
-      container.innerHTML = '';
-      text.split('\n').forEach(line => {
-        if (!line.trim()) {
-          container.appendChild(document.createElement('br'));
-        } else {
-          const p = document.createElement('p');
-          p.innerHTML = line
-            .replace(/^#+\s*/, '')
-            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-          container.appendChild(p);
-        }
-      });
-    }
-
-    async function streamRoast(payload, container) {
-      const res = await fetch('/roast', {
+    try {
+      const pRes = await fetch('/profile', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
+        body: JSON.stringify({ username }),
       });
+      const pData = await pRes.json();
 
-      if (!res.ok) {
-        container.innerHTML = `<p style="color:#F87171;font-size:0.875rem;">Failed to generate roast. Try again.</p>`;
-        return null;
-      }
+      if (!pRes.ok || pData.error) { showError(pData.error || 'Something went wrong.'); return; }
 
-      const reader = res.body.getReader();
-      const decoder = new TextDecoder();
-      let fullText = '';
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        fullText += decoder.decode(value, { stream: true });
-        renderStream(fullText, container);
-      }
-      return fullText;
-    }
-
-    /* ── Main handler ── */
-    async function handleRoast() {
-      const username = document.getElementById('username').value.trim();
-      if (!username) {
-        const inp = document.getElementById('username');
-        inp.focus();
-        inp.style.borderColor = 'rgba(239,68,68,0.6)';
-        inp.style.boxShadow = '0 0 0 3px rgba(239,68,68,0.1)';
-        setTimeout(() => { inp.style.borderColor = ''; inp.style.boxShadow = ''; }, 1000);
-        return;
-      }
-
-      const btn = document.getElementById('roastBtn');
-      const btnText = document.getElementById('btnText');
-      btn.disabled = true;
-      btnText.textContent = 'Fetching...';
-
-      document.getElementById('resultArea').classList.remove('hidden');
-      document.getElementById('skeleton').classList.remove('hidden');
-      document.getElementById('errorCard').classList.add('hidden');
-      document.getElementById('roastCard').classList.add('hidden');
-      document.getElementById('skeleton').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-
-      try {
-        const profileRes = await fetch('/profile', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username }),
-        });
-        const profileData = await profileRes.json();
-
-        if (!profileRes.ok || profileData.error) {
-          showError(profileData.error || 'Something went wrong.');
-          return;
-        }
-
-        showProfileCard(profileData);
-        btnText.textContent = 'Roasting...';
-
-        const content = document.getElementById('roastContent');
-        const labels = { savage:'savage', pirate:'pirate', corporate:'corporate', haiku:'haiku', shakespearean:'shakespeare', albanian:'albanian' };
-        document.getElementById('styleBadge').textContent = labels[selectedStyle] || selectedStyle;
-
-        const fullText = await streamRoast({
-          user: profileData.user,
-          repos: profileData.repos,
-          style: selectedStyle,
-          albanian: profileData.albanian,
-        }, content);
-
-        if (fullText) currentRoast = fullText;
-
-      } catch {
-        showError('Could not reach the server. Make sure the app is running and try again.');
-      } finally {
-        btn.disabled = false;
-        btnText.textContent = "Roast 'em";
-      }
-    }
-
-    /* ── Copy ── */
-    async function copyRoast() {
-      if (!currentRoast) return;
-      try { await navigator.clipboard.writeText(currentRoast); }
-      catch {
-        const ta = document.createElement('textarea');
-        ta.value = currentRoast;
-        document.body.appendChild(ta);
-        ta.select();
-        document.execCommand('copy');
-        document.body.removeChild(ta);
-      }
-      const label = document.getElementById('copyLabel');
-      label.textContent = 'Copied!';
-      setTimeout(() => { label.textContent = 'Copy'; }, 2000);
-    }
-
-    /* ── Another roast ── */
-    async function generateAnotherRoast() {
-      if (!cachedProfileData) return;
-
-      const content = document.getElementById('roastContent');
-      content.innerHTML = loadingHTML('Cooking another one...');
+      showProfileCard(pData);
+      btnText.textContent = 'Roasting...';
 
       const labels = { savage:'savage', pirate:'pirate', corporate:'corporate', haiku:'haiku', shakespearean:'shakespeare', albanian:'albanian' };
-      document.getElementById('styleBadge').textContent = labels[selectedStyle] || selectedStyle;
+      $('styleBadge').textContent = labels[selectedStyle] || selectedStyle;
 
-      const fullText = await streamRoast({
-        user: cachedProfileData.user,
-        repos: cachedProfileData.repos,
-        style: selectedStyle,
-        albanian: cachedProfileData.albanian,
-      }, content);
+      const full = await streamRoast({
+        user: pData.user, repos: pData.repos,
+        style: selectedStyle, albanian: pData.albanian,
+      }, $('roastContent'));
 
-      if (fullText) currentRoast = fullText;
+      if (full) currentRoast = full;
+
+    } catch {
+      showError('Could not reach the server. Make sure the app is running and try again.');
+    } finally {
+      btn.disabled = false;
+      btnText.textContent = "Roast 'em";
     }
+  }
 
-    /* ── Roast another person ── */
-    function roastAnother() {
-      document.getElementById('username').value = '';
-      document.getElementById('resultArea').classList.add('hidden');
-      cachedProfileData = null;
-      document.getElementById('username').focus();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+  /* ── Copy ── */
+  async function copyRoast() {
+    if (!currentRoast) return;
+    try { await navigator.clipboard.writeText(currentRoast); }
+    catch {
+      const ta = document.createElement('textarea');
+      ta.value = currentRoast;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
     }
-  </script>
+    const label = $('copyLabel');
+    label.textContent = 'Copied!';
+    setTimeout(() => { label.textContent = 'Copy'; }, 2000);
+  }
+
+  /* ── Another roast ── */
+  async function generateAnotherRoast() {
+    if (!cachedProfileData) return;
+    const el = $('roastContent');
+    el.innerHTML = loadingHTML('Cooking another one...');
+
+    const labels = { savage:'savage', pirate:'pirate', corporate:'corporate', haiku:'haiku', shakespearean:'shakespeare', albanian:'albanian' };
+    $('styleBadge').textContent = labels[selectedStyle] || selectedStyle;
+
+    const full = await streamRoast({
+      user: cachedProfileData.user, repos: cachedProfileData.repos,
+      style: selectedStyle, albanian: cachedProfileData.albanian,
+    }, el);
+
+    if (full) currentRoast = full;
+  }
+</script>
 </body>
 </html>
