@@ -22,165 +22,255 @@
             card:    '#16161F',
             border:  '#2A2A3A',
             fire:    '#FF6B35',
-            ember:   '#FF4500',
+            ember:   '#E8571F',
             amber:   '#FFB347',
-            bright:  '#F8FAFC',
+            bright:  '#F1F1F3',
             muted:   '#8B8BA7',
             subtle:  '#3A3A50',
-          },
-          keyframes: {
-            fadeUp:  { '0%': { opacity: 0, transform: 'translateY(20px)' }, '100%': { opacity: 1, transform: 'translateY(0)' } },
-            fadeIn:  { '0%': { opacity: 0 }, '100%': { opacity: 1 } },
-            pop:     { '0%': { transform: 'scale(0.7)', opacity: 0 }, '60%': { transform: 'scale(1.08)' }, '100%': { transform: 'scale(1)', opacity: 1 } },
-            flameL:  { '0%,100%': { transform: 'rotate(-6deg) scaleY(1) scaleX(1)' }, '50%': { transform: 'rotate(4deg) scaleY(1.12) scaleX(0.95)' } },
-            flameR:  { '0%,100%': { transform: 'rotate(4deg) scaleY(0.95)' }, '50%': { transform: 'rotate(-5deg) scaleY(1.08)' } },
-            glow:    { '0%,100%': { opacity: 0.6 }, '50%': { opacity: 1 } },
-            shimmer: { '0%': { backgroundPosition: '-600px 0' }, '100%': { backgroundPosition: '600px 0' } },
-            slideUp: { '0%': { opacity: 0, transform: 'translateY(12px)' }, '100%': { opacity: 1, transform: 'translateY(0)' } },
-            pulse3:  { '0%,100%': { transform: 'scale(1)', opacity: 0.8 }, '50%': { transform: 'scale(1.15)', opacity: 1 } },
-          },
-          animation: {
-            fadeUp:  'fadeUp 0.5s cubic-bezier(.22,1,.36,1) forwards',
-            fadeIn:  'fadeIn 0.4s ease forwards',
-            pop:     'pop 0.45s cubic-bezier(.34,1.56,.64,1) forwards',
-            flameL:  'flameL 1.4s ease-in-out infinite',
-            flameR:  'flameR 1.1s ease-in-out infinite',
-            glow:    'glow 2s ease-in-out infinite',
-            shimmer: 'shimmer 1.6s linear infinite',
-            slideUp: 'slideUp 0.4s ease forwards',
-            pulse3:  'pulse3 2s ease-in-out infinite',
           },
         },
       },
     };
   </script>
   <style>
+    /* ─── Reset ─── */
     *, *::before, *::after { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
 
     body {
       background-color: #09090F;
-      color: #F8FAFC;
+      color: #F1F1F3;
       min-height: 100vh;
       font-family: 'IBM Plex Sans', sans-serif;
+      -webkit-font-smoothing: antialiased;
     }
 
-    /* Radial gradient spotlight at top — pure CSS, no DOM element needed */
+    /* ─── Custom easing ─── */
+    :root {
+      --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+      --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+    }
 
-    /* Subtle grid pattern */
+    /* ─── Background grid ─── */
     .grid-bg {
       background-image:
-        linear-gradient(rgba(42,42,58,0.4) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(42,42,58,0.4) 1px, transparent 1px);
+        linear-gradient(rgba(42,42,58,0.35) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(42,42,58,0.35) 1px, transparent 1px);
       background-size: 40px 40px;
     }
 
-    /* Shimmer for skeleton */
+    /* ─── Fire glow behind header ─── */
+    .header-glow {
+      position: fixed;
+      top: 0; left: 50%;
+      transform: translateX(-50%);
+      width: 560px; height: 280px;
+      background: radial-gradient(ellipse at 50% 0%, rgba(255,107,53,0.11) 0%, transparent 68%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ─── Shimmer skeleton ─── */
     .shimmer-bg {
-      background: linear-gradient(90deg, #16161F 25%, #1E1E2E 50%, #16161F 75%);
+      background: linear-gradient(90deg, #16161F 25%, #1F1F2E 50%, #16161F 75%);
       background-size: 600px 100%;
-      animation: shimmer 1.6s linear infinite;
+      animation: shimmer 1.5s linear infinite;
     }
 
-    /* Roast text — visible by default, JS adds fade-in class */
-    .roast-text p {
-      opacity: 1;
-      transform: none;
-    }
-    .roast-text p.animate-in {
-      animation: slideUp 0.4s cubic-bezier(.22,1,.36,1) both;
-    }
-
-    /* Fire glow on accent elements */
-    .fire-glow {
-      box-shadow: 0 0 24px rgba(255,107,53,0.45), 0 0 48px rgba(255,69,0,0.2);
-    }
-    .fire-glow:hover {
-      box-shadow: 0 0 32px rgba(255,107,53,0.65), 0 0 64px rgba(255,69,0,0.3);
-    }
-
-    /* Input ring on focus */
-    #username:focus {
-      outline: none;
-      box-shadow: 0 0 0 2px rgba(255,107,53,0.5), 0 0 16px rgba(255,107,53,0.15);
-    }
-
-    /* Style pill */
-    .style-pill {
-      transition: all 0.18s ease;
-      border: 1.5px solid #2A2A3A;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.7rem;
-      width: 100%;
-      text-align: center;
-    }
-    .style-pill.active {
-      border-color: #FF6B35;
-      background: rgba(255,107,53,0.12);
-      color: #FF6B35;
-    }
-    .style-pill:hover:not(.active) {
-      border-color: #3A3A50;
-      color: #F8FAFC;
-      background: rgba(255,255,255,0.04);
-    }
-
-    /* Stat chip */
-    .stat-chip {
-      background: rgba(255,107,53,0.08);
-      border: 1px solid rgba(255,107,53,0.2);
-      border-radius: 6px;
-      padding: 4px 10px;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.68rem;
-      color: #FFB347;
-    }
-
-    /* Result card entrance */
-    #roastCard { animation: fadeUp 0.5s cubic-bezier(.22,1,.36,1) forwards; }
-
-    /* Scroll smooth */
-    html { scroll-behavior: smooth; }
-
-    /* Keyframes that are only referenced in <style>, not as animate-* classes */
-    @keyframes slideUp {
-      from { opacity: 0; transform: translateY(14px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
+    /* ─── Keyframes ─── */
     @keyframes shimmer {
       from { background-position: -600px 0; }
       to   { background-position:  600px 0; }
     }
+
     @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(20px); }
+      from { opacity: 0; transform: translateY(16px); }
       to   { opacity: 1; transform: translateY(0); }
     }
 
+    @keyframes popIn {
+      0%   { opacity: 0; transform: scale(0.88); }
+      65%  { transform: scale(1.03); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    @keyframes loadDot {
+      0%, 100% { opacity: 0.25; transform: scale(0.75); }
+      50%       { opacity: 1;    transform: scale(1); }
+    }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ─── Input ─── */
+    #username {
+      transition: border-color 160ms var(--ease-out),
+                  box-shadow   160ms var(--ease-out);
+    }
+    #username:focus {
+      outline: none;
+      border-color: rgba(255,107,53,0.55);
+      box-shadow: 0 0 0 3px rgba(255,107,53,0.12), 0 0 20px rgba(255,107,53,0.08);
+    }
+
+    /* ─── CTA button ─── */
+    #roastBtn {
+      box-shadow: 0 0 20px rgba(255,107,53,0.4), 0 0 40px rgba(255,107,53,0.15);
+      transition: background-color 160ms var(--ease-out),
+                  box-shadow       160ms var(--ease-out),
+                  transform        120ms var(--ease-out),
+                  opacity          160ms var(--ease-out);
+    }
+    #roastBtn:active:not(:disabled) {
+      transform: scale(0.96);
+    }
+    #roastBtn:disabled {
+      box-shadow: none;
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+    @media (hover: hover) and (pointer: fine) {
+      #roastBtn:hover:not(:disabled) {
+        background-color: #E8571F;
+        box-shadow: 0 0 28px rgba(255,107,53,0.6), 0 0 56px rgba(255,107,53,0.22);
+      }
+    }
+
+    /* ─── Style pills ─── */
+    .style-pill {
+      border: 1.5px solid #2A2A3A;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      width: 100%;
+      text-align: center;
+      transition: border-color     150ms var(--ease-out),
+                  background-color 150ms var(--ease-out),
+                  color            150ms var(--ease-out),
+                  transform        100ms var(--ease-out);
+    }
+    .style-pill:active {
+      transform: scale(0.96);
+    }
+    .style-pill.active {
+      border-color: #FF6B35;
+      background: rgba(255,107,53,0.1);
+      color: #FF6B35;
+    }
+    @media (hover: hover) and (pointer: fine) {
+      .style-pill:hover:not(.active) {
+        border-color: #3A3A50;
+        color: #F1F1F3;
+        background: rgba(255,255,255,0.04);
+      }
+    }
+
+    /* ─── Action buttons ─── */
+    .action-btn {
+      transition: border-color 150ms var(--ease-out),
+                  color        150ms var(--ease-out),
+                  background   150ms var(--ease-out),
+                  transform    100ms var(--ease-out);
+    }
+    .action-btn:active {
+      transform: scale(0.96);
+    }
+    @media (hover: hover) and (pointer: fine) {
+      .action-btn:hover {
+        border-color: #3A3A50;
+        color: #F1F1F3;
+      }
+      .action-btn.fire-border:hover {
+        border-color: #FF6B35;
+        background: rgba(255,107,53,0.07);
+      }
+    }
+
+    /* ─── Example username pills ─── */
+    .example-btn {
+      transition: border-color 150ms var(--ease-out),
+                  color        150ms var(--ease-out),
+                  transform    100ms var(--ease-out);
+    }
+    .example-btn:active { transform: scale(0.95); }
+    @media (hover: hover) and (pointer: fine) {
+      .example-btn:hover {
+        border-color: #3A3A50;
+        color: #F1F1F3;
+      }
+    }
+
+    /* ─── Stat chips ─── */
+    .stat-chip {
+      background: rgba(255,107,53,0.07);
+      border: 1px solid rgba(255,107,53,0.18);
+      border-radius: 6px;
+      padding: 3px 10px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.67rem;
+      color: #FFB347;
+      letter-spacing: 0.01em;
+    }
+
+    /* ─── Roast card entrance ─── */
+    #roastCard {
+      animation: fadeUp 0.4s var(--ease-out) forwards;
+    }
+
+    /* ─── Avatar pop ─── */
+    .avatar-pop {
+      animation: popIn 0.4s var(--ease-out) forwards;
+    }
+
+    /* ─── Loading dots ─── */
+    .load-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: #FF6B35;
+      animation: loadDot 1.1s var(--ease-in-out) infinite;
+    }
+    .load-dot:nth-child(2) { animation-delay: 0.18s; }
+    .load-dot:nth-child(3) { animation-delay: 0.36s; }
+
+    /* ─── Roast text ─── */
+    .roast-text p {
+      opacity: 1;
+      transform: none;
+      line-height: 1.7;
+    }
+    .roast-text p.slide-in {
+      animation: slideUp 0.35s var(--ease-out) both;
+    }
+
+    /* ─── Reduced motion ─── */
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
+        animation-duration:       0.01ms !important;
+        animation-iteration-count: 1     !important;
+        transition-duration:      0.01ms !important;
       }
     }
   </style>
 </head>
 
 <body>
-  <div class="fixed inset-0 grid-bg opacity-50 pointer-events-none z-0"></div>
-  <!-- fire glow behind header -->
-  <div class="fixed top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] pointer-events-none z-0" style="background: radial-gradient(ellipse at 50% 0%, rgba(255,107,53,0.13) 0%, transparent 70%);"></div>
+  <div class="fixed inset-0 grid-bg opacity-40 pointer-events-none z-0"></div>
+  <div class="header-glow"></div>
 
   <div class="relative z-10 min-h-screen flex flex-col items-center w-full">
 
     <!-- ── HEADER ── -->
-    <header class="pt-14 pb-6 px-4 w-full max-w-lg mx-auto">
-      <div class="flex flex-col items-center text-center gap-3">
-        <h1 class="font-mono font-bold text-4xl md:text-5xl leading-none tracking-tight">
-          Roast My <span style="background: linear-gradient(135deg, #FF6B35, #FFB347); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">GitHub</span>
-        </h1>
-        <p class="text-muted text-sm leading-relaxed">
-          Drop a username. Get publicly humiliated.<br/>
-          <span style="color: rgba(255,107,53,0.6); font-family: 'JetBrains Mono', monospace; font-size: 0.7rem;">// powered by Claude AI · no mercy included</span>
+    <header class="pt-16 pb-8 px-4 w-full max-w-lg mx-auto">
+      <div class="flex flex-col items-center text-center gap-4">
+        <div>
+          <h1 class="font-mono font-bold leading-none tracking-tight" style="font-size: clamp(2rem, 8vw, 3rem);">
+            Roast My <span style="color: #FF6B35;">GitHub</span>
+          </h1>
+        </div>
+        <p class="text-muted text-sm leading-relaxed max-w-xs" style="color: #8B8BA7;">
+          Drop a username. Get publicly humiliated.<br>
+          <span style="color: rgba(255,107,53,0.5); font-family: 'JetBrains Mono', monospace; font-size: 0.68rem; letter-spacing: 0.02em;">// powered by Claude · no mercy included</span>
         </p>
       </div>
     </header>
@@ -189,29 +279,30 @@
     <main class="w-full max-w-lg px-4 pb-20 flex flex-col gap-4">
 
       <!-- Input card -->
-      <div class="bg-card rounded-2xl border border-border p-6 shadow-2xl">
+      <div class="bg-card rounded-2xl border border-border p-6" style="box-shadow: 0 1px 40px rgba(0,0,0,0.4);">
 
         <!-- Username -->
         <div class="mb-5">
-          <label for="username" class="block font-mono text-xs text-muted/70 mb-2 tracking-widest uppercase">GitHub Username</label>
+          <label for="username" class="block font-mono text-xs tracking-widest uppercase mb-2" style="color: rgba(139,139,167,0.6); font-size: 0.65rem;">GitHub Username</label>
           <div class="flex gap-2.5">
             <div class="relative flex-1">
-              <span class="absolute left-3.5 top-1/2 -translate-y-1/2 font-mono text-muted/50 text-sm select-none">@</span>
+              <span class="absolute left-3.5 top-1/2 -translate-y-1/2 font-mono text-sm select-none" style="color: rgba(139,139,167,0.4);">@</span>
               <input
                 id="username"
                 type="text"
                 placeholder="torvalds"
                 autocomplete="off"
                 spellcheck="false"
-                class="w-full bg-surface border border-border rounded-xl pl-8 pr-4 py-3 text-bright text-sm font-mono placeholder-muted/30 transition-all duration-200"
+                class="w-full font-mono text-sm rounded-xl pl-8 pr-4 py-3"
+                style="background: #111118; border: 1.5px solid #2A2A3A; color: #F1F1F3;"
               />
             </div>
             <button
               id="roastBtn"
               onclick="handleRoast()"
-              class="fire-glow bg-fire hover:bg-ember text-white font-bold font-sans px-5 py-3 rounded-xl text-sm transition-all duration-200 cursor-pointer whitespace-nowrap disabled:opacity-40 disabled:cursor-not-allowed disabled:shadow-none flex items-center gap-2"
+              class="font-bold font-sans rounded-xl text-sm cursor-pointer whitespace-nowrap flex items-center gap-2 px-5 py-3"
+              style="background: #FF6B35; color: #fff;"
             >
-              <!-- Fire icon -->
               <svg class="w-4 h-4 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
                 <path d="M12.017 0C9.389 3.108 8.5 6.5 9.5 9.5c.5 1.5 1.5 2.5 1 4C8 12 6.5 9.5 6.5 9.5 5.5 14 7 17 9 19c-1.5-.5-2.5-1.5-3-3C4.5 20 7 23 12 24c5 0 8-3 8-7 0-2.5-1.5-4.5-3-5.5.5 2-1 3.5-2 4C16.5 13 15 9 12.017 0z"/>
               </svg>
@@ -222,14 +313,14 @@
 
         <!-- Roast style -->
         <div>
-          <p class="font-mono text-xs text-muted/70 uppercase tracking-widest mb-2">Roast Style</p>
+          <p class="font-mono uppercase tracking-widest mb-2" style="font-size: 0.65rem; color: rgba(139,139,167,0.6);">Roast Style</p>
           <div class="grid grid-cols-3 gap-2" id="stylePills">
-            <button class="style-pill active text-fire py-2 rounded-xl cursor-pointer text-center" data-style="savage">Savage</button>
-            <button class="style-pill text-muted py-2 rounded-xl cursor-pointer text-center" data-style="pirate">Pirate</button>
-            <button class="style-pill text-muted py-2 rounded-xl cursor-pointer text-center" data-style="corporate">Corporate</button>
-            <button class="style-pill text-muted py-2 rounded-xl cursor-pointer text-center" data-style="haiku">Haiku</button>
-            <button class="style-pill text-muted py-2 rounded-xl cursor-pointer text-center" data-style="shakespearean">Shakespeare</button>
-            <button class="style-pill text-muted py-2 rounded-xl cursor-pointer text-center" data-style="albanian">Albanian</button>
+            <button class="style-pill active text-fire py-2 rounded-xl cursor-pointer" data-style="savage">Savage</button>
+            <button class="style-pill text-muted py-2 rounded-xl cursor-pointer" data-style="pirate">Pirate</button>
+            <button class="style-pill text-muted py-2 rounded-xl cursor-pointer" data-style="corporate">Corporate</button>
+            <button class="style-pill text-muted py-2 rounded-xl cursor-pointer" data-style="haiku">Haiku</button>
+            <button class="style-pill text-muted py-2 rounded-xl cursor-pointer" data-style="shakespearean">Shakespeare</button>
+            <button class="style-pill text-muted py-2 rounded-xl cursor-pointer" data-style="albanian">Albanian</button>
           </div>
         </div>
       </div>
@@ -240,45 +331,44 @@
         <!-- Skeleton -->
         <div id="skeleton" class="hidden bg-card rounded-2xl border border-border p-6">
           <div class="flex items-center gap-4 mb-5">
-            <div class="w-14 h-14 rounded-full shimmer-bg flex-shrink-0"></div>
+            <div class="w-14 h-14 rounded-xl shimmer-bg flex-shrink-0"></div>
             <div class="flex-1 space-y-2.5">
-              <div class="h-4 shimmer-bg rounded-lg w-36"></div>
-              <div class="h-3 shimmer-bg rounded-lg w-24"></div>
+              <div class="h-4 shimmer-bg rounded-lg w-32"></div>
+              <div class="h-3 shimmer-bg rounded-lg w-20"></div>
             </div>
           </div>
           <div class="space-y-2.5">
             <div class="h-3 shimmer-bg rounded-lg w-full"></div>
-            <div class="h-3 shimmer-bg rounded-lg w-11/12"></div>
-            <div class="h-3 shimmer-bg rounded-lg w-4/5"></div>
+            <div class="h-3 shimmer-bg rounded-lg" style="width:91%"></div>
+            <div class="h-3 shimmer-bg rounded-lg" style="width:78%"></div>
             <div class="h-3 shimmer-bg rounded-lg w-full"></div>
-            <div class="h-3 shimmer-bg rounded-lg w-3/4"></div>
-            <div class="h-3 shimmer-bg rounded-lg w-5/6"></div>
+            <div class="h-3 shimmer-bg rounded-lg" style="width:83%"></div>
           </div>
         </div>
 
         <!-- Error -->
-        <div id="errorCard" class="hidden bg-card rounded-2xl border border-red-900/50 p-5">
+        <div id="errorCard" class="hidden bg-card rounded-2xl p-5" style="border: 1.5px solid rgba(239,68,68,0.35);">
           <div class="flex items-start gap-3">
-            <svg class="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <svg class="w-5 h-5 flex-shrink-0 mt-0.5" style="color:#F87171;" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"/>
             </svg>
-            <p id="errorMsg" class="text-red-400 text-sm leading-relaxed font-sans"></p>
+            <p id="errorMsg" class="text-sm leading-relaxed font-sans" style="color: #F87171;"></p>
           </div>
         </div>
 
         <!-- Roast result -->
         <div id="roastCard" class="hidden bg-card rounded-2xl border border-border overflow-hidden">
 
-          <!-- User header with fire accent bar -->
-          <div class="h-0.5 w-full" style="background: linear-gradient(90deg, #FF4500, #FF6B35, #FFB347, transparent)"></div>
+          <!-- Accent bar -->
+          <div class="h-px w-full" style="background: linear-gradient(90deg, #FF4500 0%, #FF6B35 40%, #FFB347 70%, transparent 100%);"></div>
 
+          <!-- User header -->
           <div class="p-5 pb-4">
             <div class="flex items-start gap-4">
               <div class="relative flex-shrink-0">
-                <img id="avatar" src="" alt="GitHub avatar" class="w-14 h-14 rounded-xl border border-border object-cover animate-pop" />
-                <!-- Online-style fire dot -->
-                <div class="absolute -bottom-1 -right-1 w-5 h-5 bg-bg rounded-full flex items-center justify-center">
-                  <svg viewBox="0 0 24 24" class="w-3.5 h-3.5" fill="currentColor" style="color:#FF6B35">
+                <img id="avatar" src="" alt="GitHub avatar" class="avatar-pop w-14 h-14 rounded-xl border border-border object-cover" />
+                <div class="absolute -bottom-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center" style="background:#09090F;">
+                  <svg viewBox="0 0 24 24" class="w-3.5 h-3.5" fill="#FF6B35">
                     <path d="M12.017 0C9.389 3.108 8.5 6.5 9.5 9.5c.5 1.5 1.5 2.5 1 4C8 12 6.5 9.5 6.5 9.5 5.5 14 7 17 9 19c-1.5-.5-2.5-1.5-3-3C4.5 20 7 23 12 24c5 0 8-3 8-7 0-2.5-1.5-4.5-3-5.5.5 2-1 3.5-2 4C16.5 13 15 9 12.017 0z"/>
                   </svg>
                 </div>
@@ -286,10 +376,10 @@
 
               <div class="flex-1 min-w-0">
                 <div class="flex items-center gap-2 flex-wrap mb-1">
-                  <h2 id="displayName" class="font-bold text-bright text-base leading-tight"></h2>
-                  <span id="albanianBadge" class="hidden font-mono text-xs bg-fire/10 text-fire border border-fire/25 px-2 py-0.5 rounded-full">AL</span>
+                  <h2 id="displayName" class="font-bold text-base leading-tight" style="color:#F1F1F3;"></h2>
+                  <span id="albanianBadge" class="hidden font-mono text-xs px-2 py-0.5 rounded-full" style="background:rgba(255,107,53,0.1);color:#FF6B35;border:1px solid rgba(255,107,53,0.25);">AL</span>
                 </div>
-                <p id="displayHandle" class="font-mono text-muted text-xs mb-2.5"></p>
+                <p id="displayHandle" class="font-mono text-xs mb-2.5" style="color:#8B8BA7;"></p>
                 <div class="flex gap-2 flex-wrap">
                   <span id="statRepos" class="stat-chip"></span>
                   <span id="statFollowers" class="stat-chip"></span>
@@ -297,29 +387,28 @@
                 </div>
               </div>
 
-              <!-- Style badge top right -->
-              <span id="styleBadge" class="flex-shrink-0 font-mono text-xs text-muted/60 bg-surface border border-border px-2.5 py-1 rounded-lg"></span>
+              <span id="styleBadge" class="flex-shrink-0 font-mono text-xs px-2.5 py-1 rounded-lg" style="color:rgba(139,139,167,0.55);background:#111118;border:1px solid #2A2A3A;font-size:0.65rem;"></span>
             </div>
           </div>
 
           <!-- Divider -->
-          <div class="mx-5 border-t border-border/60"></div>
+          <div class="mx-5" style="border-top:1px solid rgba(42,42,58,0.8);"></div>
 
           <!-- Roast text -->
           <div class="p-5">
-            <div id="roastContent" class="roast-text text-bright/85 text-sm leading-relaxed space-y-3 font-sans"></div>
+            <div id="roastContent" class="roast-text text-sm font-sans space-y-3" style="color:rgba(241,241,243,0.82);"></div>
           </div>
 
           <!-- Actions -->
-          <div class="px-5 pb-5 flex gap-2.5 flex-wrap">
-            <button onclick="copyRoast()" class="flex items-center gap-2 font-mono text-xs text-muted border border-border hover:border-subtle hover:text-bright px-4 py-2 rounded-xl transition-all duration-200 cursor-pointer">
+          <div class="px-5 pb-5 flex gap-2 flex-wrap">
+            <button onclick="copyRoast()" class="action-btn flex items-center gap-2 font-mono text-xs px-4 py-2 rounded-xl cursor-pointer" style="color:#8B8BA7;border:1.5px solid #2A2A3A;">
               <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
               </svg>
               <span id="copyLabel">Copy</span>
             </button>
 
-            <button onclick="generateAnotherRoast()" class="flex items-center gap-2 font-mono text-xs text-fire border border-fire/30 hover:border-fire hover:bg-fire/8 px-4 py-2 rounded-xl transition-all duration-200 cursor-pointer">
+            <button onclick="generateAnotherRoast()" class="action-btn fire-border flex items-center gap-2 font-mono text-xs px-4 py-2 rounded-xl cursor-pointer" style="color:#FF6B35;border:1.5px solid rgba(255,107,53,0.3);">
               <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
               </svg>
@@ -327,7 +416,7 @@
             </button>
 
             <a id="githubLink" href="#" target="_blank" rel="noopener noreferrer"
-               class="flex items-center gap-2 font-mono text-xs text-muted border border-border hover:border-subtle hover:text-bright px-4 py-2 rounded-xl transition-all duration-200 cursor-pointer">
+               class="action-btn flex items-center gap-2 font-mono text-xs px-4 py-2 rounded-xl cursor-pointer" style="color:#8B8BA7;border:1.5px solid #2A2A3A;">
               <svg class="w-3.5 h-3.5 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
                 <path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z"/>
               </svg>
@@ -340,20 +429,20 @@
 
       <!-- Example users -->
       <div id="examples" class="text-center pt-2">
-        <p class="font-mono text-xs text-muted/40 mb-2.5">// try a legend</p>
+        <p class="font-mono mb-3" style="font-size:0.68rem;color:rgba(139,139,167,0.35);">// try a legend</p>
         <div class="flex flex-wrap gap-2 justify-center">
-          <button onclick="tryExample('torvalds')" class="font-mono text-xs text-muted/60 border border-border hover:border-subtle hover:text-bright px-3.5 py-1.5 rounded-full transition-all duration-200 cursor-pointer">torvalds</button>
-          <button onclick="tryExample('gaearon')" class="font-mono text-xs text-muted/60 border border-border hover:border-subtle hover:text-bright px-3.5 py-1.5 rounded-full transition-all duration-200 cursor-pointer">gaearon</button>
-          <button onclick="tryExample('yyx990803')" class="font-mono text-xs text-muted/60 border border-border hover:border-subtle hover:text-bright px-3.5 py-1.5 rounded-full transition-all duration-200 cursor-pointer">yyx990803</button>
+          <button onclick="tryExample('torvalds')" class="example-btn font-mono text-xs px-4 py-1.5 rounded-full cursor-pointer" style="color:rgba(139,139,167,0.55);border:1.5px solid #2A2A3A;">torvalds</button>
+          <button onclick="tryExample('gaearon')" class="example-btn font-mono text-xs px-4 py-1.5 rounded-full cursor-pointer" style="color:rgba(139,139,167,0.55);border:1.5px solid #2A2A3A;">gaearon</button>
+          <button onclick="tryExample('yyx990803')" class="example-btn font-mono text-xs px-4 py-1.5 rounded-full cursor-pointer" style="color:rgba(139,139,167,0.55);border:1.5px solid #2A2A3A;">yyx990803</button>
         </div>
       </div>
 
     </main>
 
     <!-- Footer -->
-    <footer class="w-full max-w-lg mx-auto px-4 pb-10 pt-6 mt-4">
-      <div class="border-t border-border/30 pt-6 flex flex-col items-center gap-2 text-center">
-        <p class="font-mono text-xs" style="color: rgba(255,107,53,0.55);">
+    <footer class="w-full max-w-lg mx-auto px-4 pb-10 pt-4">
+      <div class="pt-6 text-center" style="border-top:1px solid rgba(42,42,58,0.5);">
+        <p class="font-mono" style="font-size:0.68rem;color:rgba(255,107,53,0.45);">
           zero chill. maximum damage. 100% accurate.
         </p>
       </div>
@@ -366,20 +455,30 @@
     let currentRoast = '';
     let cachedProfileData = null;
 
+    /* ── Loading HTML helper ── */
+    function loadingHTML(msg) {
+      return `<div class="flex items-center gap-3 py-4">
+        <div class="flex gap-1.5">
+          <span class="load-dot"></span>
+          <span class="load-dot"></span>
+          <span class="load-dot"></span>
+        </div>
+        <span class="font-mono text-xs" style="color:#8B8BA7;">${msg}</span>
+      </div>`;
+    }
+
+    /* ── Style pills ── */
     document.querySelectorAll('.style-pill').forEach(pill => {
       pill.addEventListener('click', () => {
         document.querySelectorAll('.style-pill').forEach(p => {
-          p.classList.remove('active', 'text-fire');
-          p.classList.add('text-muted');
+          p.classList.remove('active');
+          p.style.color = '#8B8BA7';
         });
-        pill.classList.add('active', 'text-fire');
-        pill.classList.remove('text-muted');
+        pill.classList.add('active');
+        pill.style.color = '#FF6B35';
         selectedStyle = pill.dataset.style;
 
-        // If a profile is already loaded, auto-generate roast in new style
-        if (cachedProfileData) {
-          generateAnotherRoast();
-        }
+        if (cachedProfileData) generateAnotherRoast();
       });
     });
 
@@ -392,6 +491,7 @@
       handleRoast();
     }
 
+    /* ── Show / hide states ── */
     function showError(msg) {
       document.getElementById('resultArea').classList.remove('hidden');
       document.getElementById('skeleton').classList.add('hidden');
@@ -408,8 +508,13 @@
       document.getElementById('roastCard').classList.remove('hidden');
 
       const u = data.user;
-      document.getElementById('avatar').src = u.avatar_url;
-      document.getElementById('avatar').alt = u.login + ' avatar';
+      const avatar = document.getElementById('avatar');
+      avatar.src = u.avatar_url;
+      avatar.alt = u.login + ' avatar';
+      avatar.classList.remove('avatar-pop');
+      void avatar.offsetWidth; // force reflow to re-trigger animation
+      avatar.classList.add('avatar-pop');
+
       document.getElementById('displayName').textContent = u.name || u.login;
       document.getElementById('displayHandle').textContent = '@' + u.login;
       document.getElementById('statRepos').textContent = u.public_repos + ' repos';
@@ -422,57 +527,63 @@
       document.getElementById('albanianBadge').classList.toggle('hidden', !data.albanian);
       document.getElementById('githubLink').href = 'https://github.com/' + u.login;
 
-      const labels = { savage:'savage', pirate:'pirate', corporate:'corporate', haiku:'haiku', shakespearean:'shakespeare', albanian:'🇽🇰 albanian' };
+      const labels = { savage:'savage', pirate:'pirate', corporate:'corporate', haiku:'haiku', shakespearean:'shakespeare', albanian:'albanian' };
       document.getElementById('styleBadge').textContent = labels[selectedStyle] || selectedStyle;
 
-      // Show roast loading state
-      const content = document.getElementById('roastContent');
-      content.innerHTML = `
-        <div class="flex items-center gap-3 py-4">
-          <div class="flex gap-1">
-            <span class="w-2 h-2 rounded-full bg-fire animate-bounce" style="animation-delay:0s"></span>
-            <span class="w-2 h-2 rounded-full bg-fire animate-bounce" style="animation-delay:0.15s"></span>
-            <span class="w-2 h-2 rounded-full bg-fire animate-bounce" style="animation-delay:0.3s"></span>
-          </div>
-          <span class="text-muted text-xs font-mono">Claude is cooking something brutal...</span>
-        </div>`;
-
+      document.getElementById('roastContent').innerHTML = loadingHTML('Claude is cooking something brutal...');
       document.getElementById('roastCard').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
 
-    function showRoastText(roastText, style) {
-      currentRoast = roastText;
-      const labels = { savage:'savage', pirate:'pirate', corporate:'corporate', haiku:'haiku', shakespearean:'shakespeare', albanian:'🇽🇰 albanian' };
-      document.getElementById('styleBadge').textContent = labels[style] || style;
-
-      const content = document.getElementById('roastContent');
-      content.innerHTML = '';
-
-      // Strip markdown bold/headers for cleaner display, render line by line
-      const lines = roastText.split('\n').filter(l => l.trim());
-      lines.forEach((line, i) => {
-        const p = document.createElement('p');
-        // Convert **bold** to <strong> and strip # headers
-        const cleaned = line
-          .replace(/^#+\s*/, '')
-          .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-        p.innerHTML = cleaned;
-        p.className = 'animate-in';
-        p.style.animationDelay = (i * 0.07) + 's';
-        p.style.opacity = '0';
-        content.appendChild(p);
-        // Force reflow then set opacity via animation
-        requestAnimationFrame(() => { p.style.opacity = ''; });
+    /* ── Stream renderer ── */
+    function renderStream(text, container) {
+      container.innerHTML = '';
+      text.split('\n').forEach(line => {
+        if (!line.trim()) {
+          container.appendChild(document.createElement('br'));
+        } else {
+          const p = document.createElement('p');
+          p.innerHTML = line
+            .replace(/^#+\s*/, '')
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+          container.appendChild(p);
+        }
       });
     }
 
+    async function streamRoast(payload, container) {
+      const res = await fetch('/roast', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+
+      if (!res.ok) {
+        container.innerHTML = `<p style="color:#F87171;font-size:0.875rem;">Failed to generate roast. Try again.</p>`;
+        return null;
+      }
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let fullText = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        fullText += decoder.decode(value, { stream: true });
+        renderStream(fullText, container);
+      }
+      return fullText;
+    }
+
+    /* ── Main handler ── */
     async function handleRoast() {
       const username = document.getElementById('username').value.trim();
       if (!username) {
         const inp = document.getElementById('username');
         inp.focus();
-        inp.style.borderColor = '#FF4500';
-        setTimeout(() => { inp.style.borderColor = ''; }, 1000);
+        inp.style.borderColor = 'rgba(239,68,68,0.6)';
+        inp.style.boxShadow = '0 0 0 3px rgba(239,68,68,0.1)';
+        setTimeout(() => { inp.style.borderColor = ''; inp.style.boxShadow = ''; }, 1000);
         return;
       }
 
@@ -481,7 +592,6 @@
       btn.disabled = true;
       btnText.textContent = 'Fetching...';
 
-      // Show full-card skeleton while fetching profile
       document.getElementById('resultArea').classList.remove('hidden');
       document.getElementById('skeleton').classList.remove('hidden');
       document.getElementById('errorCard').classList.add('hidden');
@@ -489,7 +599,6 @@
       document.getElementById('skeleton').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
       try {
-        // Step 1: fetch profile fast
         const profileRes = await fetch('/profile', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -502,55 +611,21 @@
           return;
         }
 
-        // Show profile immediately
         showProfileCard(profileData);
         btnText.textContent = 'Roasting...';
 
-        // Step 2: stream the roast in real-time
-        const roastRes = await fetch('/roast', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            user: profileData.user,
-            repos: profileData.repos,
-            style: selectedStyle,
-            albanian: profileData.albanian,
-          }),
-        });
-
-        if (!roastRes.ok) {
-          document.getElementById('roastContent').innerHTML =
-            `<p class="text-red-400 text-sm">Failed to generate roast. Try again.</p>`;
-          return;
-        }
-
-        // Stream text into the content area
         const content = document.getElementById('roastContent');
-        content.innerHTML = '';
         const labels = { savage:'savage', pirate:'pirate', corporate:'corporate', haiku:'haiku', shakespearean:'shakespeare', albanian:'albanian' };
         document.getElementById('styleBadge').textContent = labels[selectedStyle] || selectedStyle;
 
-        const reader = roastRes.body.getReader();
-        const decoder = new TextDecoder();
-        let fullText = '';
+        const fullText = await streamRoast({
+          user: profileData.user,
+          repos: profileData.repos,
+          style: selectedStyle,
+          albanian: profileData.albanian,
+        }, content);
 
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-          fullText += decoder.decode(value, { stream: true });
-          // Re-render paragraphs as text streams in
-          content.innerHTML = '';
-          fullText.split('\n').forEach(line => {
-            if (!line.trim()) {
-              content.appendChild(document.createElement('br'));
-            } else {
-              const p = document.createElement('p');
-              p.innerHTML = line.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/^#+\s*/, '');
-              content.appendChild(p);
-            }
-          });
-        }
-        currentRoast = fullText;
+        if (fullText) currentRoast = fullText;
 
       } catch {
         showError('Could not reach the server. Make sure the app is running and try again.');
@@ -560,6 +635,7 @@
       }
     }
 
+    /* ── Copy ── */
     async function copyRoast() {
       if (!currentRoast) return;
       try { await navigator.clipboard.writeText(currentRoast); }
@@ -576,69 +652,33 @@
       setTimeout(() => { label.textContent = 'Copy'; }, 2000);
     }
 
+    /* ── Another roast ── */
+    async function generateAnotherRoast() {
+      if (!cachedProfileData) return;
+
+      const content = document.getElementById('roastContent');
+      content.innerHTML = loadingHTML('Cooking another one...');
+
+      const labels = { savage:'savage', pirate:'pirate', corporate:'corporate', haiku:'haiku', shakespearean:'shakespeare', albanian:'albanian' };
+      document.getElementById('styleBadge').textContent = labels[selectedStyle] || selectedStyle;
+
+      const fullText = await streamRoast({
+        user: cachedProfileData.user,
+        repos: cachedProfileData.repos,
+        style: selectedStyle,
+        albanian: cachedProfileData.albanian,
+      }, content);
+
+      if (fullText) currentRoast = fullText;
+    }
+
+    /* ── Roast another person ── */
     function roastAnother() {
       document.getElementById('username').value = '';
       document.getElementById('resultArea').classList.add('hidden');
       cachedProfileData = null;
       document.getElementById('username').focus();
       window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    async function generateAnotherRoast() {
-      if (!cachedProfileData) return;
-
-      const content = document.getElementById('roastContent');
-      content.innerHTML = `
-        <div class="flex items-center gap-3 py-4">
-          <div class="flex gap-1">
-            <span class="w-2 h-2 rounded-full bg-fire animate-bounce" style="animation-delay:0s"></span>
-            <span class="w-2 h-2 rounded-full bg-fire animate-bounce" style="animation-delay:0.15s"></span>
-            <span class="w-2 h-2 rounded-full bg-fire animate-bounce" style="animation-delay:0.3s"></span>
-          </div>
-          <span class="text-muted text-xs font-mono">Cooking another one...</span>
-        </div>`;
-
-      try {
-        const roastRes = await fetch('/roast', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            user: cachedProfileData.user,
-            repos: cachedProfileData.repos,
-            style: selectedStyle,
-            albanian: cachedProfileData.albanian,
-          }),
-        });
-
-        if (!roastRes.ok) {
-          content.innerHTML = `<p class="text-red-400 text-sm">Failed to generate roast. Try again.</p>`;
-          return;
-        }
-
-        content.innerHTML = '';
-        const reader = roastRes.body.getReader();
-        const decoder = new TextDecoder();
-        let fullText = '';
-
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-          fullText += decoder.decode(value, { stream: true });
-          content.innerHTML = '';
-          fullText.split('\n').forEach(line => {
-            if (!line.trim()) {
-              content.appendChild(document.createElement('br'));
-            } else {
-              const p = document.createElement('p');
-              p.innerHTML = line.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/^#+\s*/, '');
-              content.appendChild(p);
-            }
-          });
-        }
-        currentRoast = fullText;
-      } catch {
-        content.innerHTML = `<p class="text-red-400 text-sm">Something went wrong. Try again.</p>`;
-      }
     }
   </script>
 </body>
