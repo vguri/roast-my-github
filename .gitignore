@@ -9,3 +9,5 @@ venv/
 dist/
 build/
 replit.nix
+.claude/
+start.sh

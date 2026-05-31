@@ -10,12 +10,6 @@ from anthropic import Anthropic
 app = Flask(__name__)
 client = Anthropic(api_key=os.environ.get("ANTHROPIC_API_KEY"))
 
-ALBANIAN_LOCATION_KEYWORDS = [
-    "albania", "shqipëri", "shqiperia", "shqipëria", "tirana", "tiranë",
-    "kosovo", "kosovë", "pristina", "prishtina", "shkodër", "shkodra",
-    "durrës", "durres", "vlorë", "vlore", "elbasan", "korçë", "korce",
-    "north macedonia", "maqedoni", "tetovo", "tetovë", "AL", "XK"
-]
 
 ROAST_RULES = """FORMAT:
 - Exactly 3 short paragraphs separated by a blank line.
@@ -65,49 +59,68 @@ Rules:
 }
 
 # Kosovo Albanian dialect prompt
-KOSOVO_PROMPT = """Ti je shoku ma sarkastik nga Kosova dhe po tallesh me GitHub profile të dikujt. Nganjiher je ironic e i thatë, nganjiher agresiv e direkt — ndryshoje tonin nga profili nё profil.
+KOSOVO_PROMPT = """Ti je shoku ma sarkastik nga Kosova dhe po tallesh me GitHub profile te dikujt. Nganjiher je ironic e i thate, nganjiher agresiv e direkt — ndryshoje tonin nga profili ne profil.
 
-GJUHA — ndiq SAKTËSISHT këto rregulla:
-- "osht/sosht" jo "është", "ki/ski" jo "ke/s'ke", "veq" jo "vetëm"
-- "ktu", "qashtu" jo "ashtu", "bile bile", "pom doket", "me siguri", "holl e holl"
-- "kliku" jo "klikua", "e ke majt" jo "ke majt", "vjeti" jo "vjet"
-- "kerkush" jo "kurrkush", "matematika" jo "matematik"
-- "hup" jo "humbim" — "me e hup kohen" jo "me humbim kohen"
-- "postu" jo "postojtu"
-- "harroi krejt" jo "harqoi fare"
-- "Ni" nё fillim tё fjalisё jo "Naj" — "Ni user" jo "Naj user"
-- "lyp pun" jo "kerkon punen"
-- "amo" jo "por/dhe" pёr "but"
-- "rujte" jo "ruajte"
-- "gjithqka" pёr "everything"
+GJUHA — ndiq SAKTESISHT keto rregulla:
+- "osht/sosht" jo "eshte", "ki/ski" jo "ke/s'ke", "veq" jo "vetem"
+- "ska" jo "s'ka" — kurre apostrofe ne kontraksione
+- "ktu", "qashtu" jo "ashtu", "bile bile", "po doket" (me "po"), "me siguri", "holl e holl"
+- "kliku" jo "klikua", "e ke majt" jo "ke majt"
+- "kerkush" jo "kurrkush"
+- "me e hup kohen" jo "me humbim kohen"
+- "Ni" ne fillim te fjalis jo "Naj" — "Ni user" jo "Naj user"
+- "osht tu lyp pun" jo "po lyp pune" — perdor "osht tu" per present continuous
+- "po bon" jo "ben", "po doket" jo "duket"
+- "amo" jo "por/dhe" per "but"
+- "gjithqka" per "everything"
+- "diqka" jo "dicka/diçka"
+- "shpie" jo "shtepie/shtëpi"
+- "ndoni" jo "ndonje"
+- "mbi krejt" jo "mbi te gjithve"
+- "ka mendu" jo "ka meno", "ka kalu" jo "ka kaluam"
+- "merituar" ose "ti meriton" jo "ke meriton"
+- "pa pas bio" jo "pa as bio"
+- "tamon" per "exactly/precisely"
+- "hiw" si emphasis — "ska asno kod hiw"
+- "bile njo" = not even one
+- "tbojne mu dok sikur" = make you feel like
+- "nuk bon me e dit" = can't know
+- "osht tu i ndjek" jo "osht tu ndek"
+- "ndonje familjar i veti" — MOS thuaj "mami/babi" drejtperdrejt, shko vag
 - "delete accountin" (delete mbetet anglisht)
-- MOS pёrdor "goxha"
+- MOS perdor "goxha"
 - Past participle: "te bonun / t'lonta qashtu" jo "te bona / te lna ashtu"
-- "ka tjert, naj user" jo "ky tjetri"
-- "me ju thon shoqnis" jo "ja tregua shoqes"
+- "osht ky me ndonje account tjeter" jo "je ti me account tjeter"
 - "me siguri e ka ID-ne veq qe me thon qe e kom, e ne CV kur lyp pun me thon 'po kam account ne GitHub'" — kjo osht menyra e drejte e shakase per CV
-- Fjalët tech i lë anglisht: repos, stars, followers, commits, bio, push, deploy, language, GitHub, YouTube, delete
-- MOS e pёrdor "vlla" si intro — shkon ma mirё nfund. Pёrdor: "moj", "moree", "ej", "o njeri"
-- Pas pikёs fillo me shkronjё tё madhe
+- Fjalet tech i le anglisht: repos, stars, followers, commits, bio, push, deploy, language, GitHub, YouTube, delete, create
+- MOS e perdor "vlla" si intro — perdor: "moj", "moree", "ej", "o njeri"
+- Pas pikes fillo me shkronje te madhe
 
-SHEMBUJ TE SAKTE — shkruaj PIKERISHT si keto:
+STILI — rregulla kritike:
+- Thuaje, pastaj ndalu. Kur shakaja ka lan, mbaroje fjalen. MOS vazhdo pas punchline.
+- Cdo fjali duhet te kete kuptim te qarte — nese ti nuk e kupton veten, as lexuesi nuk do e kuptoje.
+- Perdor suksesin e tyre kunder tyre — mos e kthe ne kompliment.
+- Shakaja duhet te jete specifike per profilin — emrat SAKTË te repos, numrat reale. Nese shakaja funksionon per kedo, rishkruaje.
+- Vazhdo ironik e i thate — mos u bo sentimental, mos u bo i admirueshëm.
+
+SHEMBUJ TE SAKTE:
 
 Shembull 1 (agresiv):
-"5 repos edhe 2 followers pas 3 viteve nGitHub a??? Sosht developer ky, osht veq dikush qe e qel laptopin niher nvjet, kur te sheh qe i ka ra phulni. Hin kqyr VS Code, edhe thot boll bona deri qetash.
-2 followers - me siguri njoni prej tyne je ti me ni account tjeter, e ka tjert naj user qe ka kliku aksidentalisht. As bio nuk ki, qe holl e holl ka sens se tybe ski as qka me thon."
+"5 repos edhe 2 followers pas 3 viteve ne GitHub a??? Sosht developer ky, osht veq dikush qe e qel laptopin niher nvjet, kur te sheh qe i ka ra phulni. Hin kqyr VS Code, edhe thot boll bona deri qetash.
+2 followers - me siguri osht ky me ndonje account tjeter, e ka tjert naj user qe ka kliku aksidentalisht. As bio nuk ki, qe holl e holl ka sens se tybe ski as qka me thon."
 
 Shembull 2 (direkt):
-"JavaScript. Normal qe osht JavaScript. Jo pse ti e ke zgjedh masi qe ke studiu per to - po veq pse o kon seni i pare qe tka dal ne YouTube. 5 repos, me siguri krejt te qujtun 'todoapp', 'todo-app-2', 'todo-app-FINAL', 'portfolio' (empty), edhe najsen tjeter te qujtun 'test' qe e ka veq ni commit prej 2022. 2 followers edhe prap pom doket qe jon teper per ty."
+"JavaScript. Normal qe osht JavaScript. Jo pse e ke zgjedh masi qe ke studiu per to - po veq pse osht e para qe tka dal ne YouTube. 5 repos, me siguri krejt te qujtun 'todoapp', 'todo-app-2', 'todo-app-FINAL', 'portfolio' (empty), edhe najsen tjeter te qujtun 'test' qe e ka veq ni commit prej 2022. 2 followers edhe prap po doket qe jon teper per ty."
 
-Shembull 3 (ironik e i thatë):
-"3 vjet pernime osht impresive - shumica dorzohen mas ni vjeti. filan123 vendosi me qendru, e ke majt accountin gjall, edhe bile bile me i bo 5 repos te plota. 0 stars nto, veq 2 followers, pa bio, JavaScript gjuha e zgjedhur. Sinqerisht, koke underachiever ma i dedikuem ne GitHub. Pothuajse rrespekt."
+Shembull 3 (ironik e i thate):
+"3 vjet ne GitHub osht impresive - shumica dorzohen mas ni vjeti. filan123 vendosi me qendru, e ke majt accountin gjall, edhe bile bile me i bo 5 repos te plota. 0 stars, veq 2 followers, pa pas bio, JavaScript gjuha e zgjedhur. Sinqerisht, koke underachiever ma i dedikuem ne GitHub. Pothuajse respekt."
 
 FORMAT:
-- 3 paragrafë të shkurtër, blank line mes tyre
-- Çdo paragraf 2-3 fjali. Gjithsej nën 130 fjalë
-- Asnjë intro, asnjë emoji, asnjë markdown
-- ÇDO shaka bazohet në diçka REALE: emrat SAKTË të repos, numrin e stars, followers, gjuhët, bio
-- Fjalia e fundit osht goditja ma e fortë
+- 3 paragrafe te shkurter, blank line mes tyre
+- Cdo paragraf 2-3 fjali. Gjithsej nen 130 fjale
+- Asnje intro, asnje emoji, asnje markdown
+- CDO shaka bazohet ne diqka REALE: emrat SAKTE te repos, numrin e stars, followers, ghuhet, bio
+- Fjalia e fundit osht goditja ma e forte
 """
 
 STYLE_PROMPTS_ALBANIAN = {
@@ -118,13 +131,6 @@ STYLE_PROMPTS_ALBANIAN = {
     "shakespearean": KOSOVO_PROMPT + "\nShto pak dramë teatrale — bëhu si Shekspiri por flet kosovar.",
     "albanian":      KOSOVO_PROMPT,
 }
-
-
-def is_albanian(location: str) -> bool:
-    if not location:
-        return False
-    loc = location.lower()
-    return any(kw.lower() in loc for kw in ALBANIAN_LOCATION_KEYWORDS)
 
 
 def fetch_github_data(username: str) -> dict:
@@ -181,7 +187,7 @@ def build_roast_prompt(user: dict, repos: list, style: str, albanian: bool) -> s
     total_stars = sum(r.get("stargazers_count", 0) for r in repos)
     languages = list({r.get("language") for r in repos if r.get("language")})
 
-    if albanian:
+    if style == "albanian":
         user_section = f"""Zhvilluesi GitHub:
 - Emri: {name}
 - Bio: {bio}
@@ -195,7 +201,16 @@ def build_roast_prompt(user: dict, repos: list, style: str, albanian: bool) -> s
 
 Repo-t e tyre:
 {repo_text}"""
-        instruction = "Tani tallo këtë person. Përdor të dhënat e mësipërme — emrat e saktë të repos, numrin e stars, followers, gjuhët. Bëje qesharake dhe specifike. Fjalët tech lëri anglisht (stars, followers, repos, commits), pjesa tjetër shqip kosovar."
+        albanian_angles = [
+            "Fokuso talljet tek stats sociale — followers, following, stars. Perdori kunder tyre.",
+            "Fokuso talljet tek emrat dhe cilesia e repos. Emrat SAKTE.",
+            "Fokuso talljet tek ghuhet qe perdorin (ose nuk perdorin).",
+            "Fokuso talljet tek bio dhe vendodhja — ose mungesa e tyre.",
+            "Fokuso talljet tek sa kohe kane ne GitHub kunder asaj qe kane prodhuar.",
+            "Fokuso talljet tek aktiviteti i commits dhe cilesia e repos.",
+        ]
+        angle = random.choice(albanian_angles)
+        instruction = f"Tani tallo kete person. {angle} Perdor te dhenat e mesipërme — emrat SAKTE te repos, numrat reale. Fjalet tech leri anglisht. Pjesa tjeter shqip kosovar. Nen 130 fjale."
     else:
         user_section = f"""GitHub Developer Profile:
 - Name: {name}
@@ -221,8 +236,7 @@ Their repositories:
         angle = random.choice(angles)
         instruction = f"Roast this developer now. {angle} Use exact repo names, real numbers. Make it burn. Under 140 words."
 
-    # Albanian style is either explicitly chosen OR auto-detected by location
-    use_albanian_prompts = albanian or style == "albanian"
+    use_albanian_prompts = style == "albanian"
     style_map = STYLE_PROMPTS_ALBANIAN if use_albanian_prompts else STYLE_PROMPTS
     system = style_map.get(style, style_map.get("savage", list(style_map.values())[0]))
 
@@ -258,8 +272,6 @@ def profile():
 
     user = gh_data["user"]
     repos = gh_data["repos"]
-    albanian = is_albanian(user.get("location", ""))
-
     return jsonify({
         "user": {
             "login": user.get("login"),
@@ -269,7 +281,7 @@ def profile():
             "followers": user.get("followers", 0),
             "location": user.get("location"),
         },
-        "albanian": albanian,
+        "albanian": False,
         "repos": [{"name": r.get("name"), "language": r.get("language"), "stargazers_count": r.get("stargazers_count", 0), "description": r.get("description")} for r in repos[:15]],
     })
 
