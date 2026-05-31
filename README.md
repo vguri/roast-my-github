@@ -2,7 +2,7 @@
 
 A web app that fetches your public GitHub profile and repos, then uses Claude AI to roast you. Six roast styles. No mercy.
 
-**Live demo:** [Replit URL — add after deploy]
+**Live demo:** [roast-my-github--violaguri.replit.app](https://roast-my-github--violaguri.replit.app)
 
 ---
 
@@ -11,7 +11,6 @@ A web app that fetches your public GitHub profile and repos, then uses Claude AI
 - Fetches public repos and profile data via the GitHub REST API
 - Sends the data to Claude AI with a style-specific prompt and streams the response word by word
 - Profile appears instantly (~0.8s). Roast streams in as it generates (~3s)
-- Detects Albanian/Kosovar users by location and roasts them in Kosovo Albanian dialect
 - Handles missing users, private profiles, rate limits, and empty inputs gracefully
 
 ## Roast styles
@@ -32,7 +31,7 @@ A web app that fetches your public GitHub profile and repos, then uses Claude AI
 ### 1. Clone
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/roast-my-github.git
+git clone https://github.com/vguri/roast-my-github.git
 cd roast-my-github
 ```
 
@@ -107,7 +106,7 @@ The first version called GitHub + Claude sequentially, so nothing appeared for ~
 Started with `claude-sonnet-4-6` (~10s). Switched to `claude-haiku-4-5-20251001` (~3s) — fast enough that streaming feels instant.
 
 **Albanian style:**
-Detects location field from GitHub API for Albanian/Kosovar cities. Uses a separate prompt written in Kosovo Albanian dialect with everyday language, English tech terms mixed in naturally (followers, stars, repos, commits), and real example roasts embedded so the model has patterns to follow rather than rules to interpret.
+A separate style pill the user can pick manually. Uses a prompt written in Kosovo Albanian dialect with everyday language, English tech terms mixed in naturally (followers, stars, repos, commits), and real example roasts embedded so the model has patterns to follow rather than rules to interpret.
 
 ---
 
@@ -125,7 +124,7 @@ Detects location field from GitHub API for Albanian/Kosovar cities. Uses a separ
 ## Stack
 
 - Backend: Python / Flask
-- Frontend: HTML + Tailwind CSS (CDN) + Vanilla JS
+- Frontend: HTML + custom CSS + Vanilla JS
 - AI: Anthropic Claude Haiku via Python SDK (streaming)
 - Data: GitHub REST API v3
 - Deploy: Replit
